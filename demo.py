@@ -1,4 +1,6 @@
-import numpy
+import numpy as np
+from PIL import Image
+from matplotlib import cm
 
 
 def read_pgm(pgmf):
@@ -23,7 +25,10 @@ def read_pgm(pgmf):
 if __name__ == '__main__':
     f = open('boat.pgm', 'rb')
     pgm = read_pgm(f)
-    print(pgm)
+    print(len(pgm[0]))
+    im = Image.fromarray(np.uint8(cm.gist_earth(pgm)*255))
+    im.show()
+
 
 # hist, bin_edges = numpy.histogram(a=im,
 #                                   bins=range(0, 257))
