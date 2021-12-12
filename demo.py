@@ -1,6 +1,7 @@
 import numpy as np
 from PIL import Image
 from matplotlib import cm
+from matplotlib import pyplot as plt
 
 
 def read_pgm(pgmf):
@@ -24,12 +25,16 @@ def read_pgm(pgmf):
 
 if __name__ == '__main__':
     f = open('boat.pgm', 'rb')
-    pgm = read_pgm(f)
-    print(len(pgm[0]))
-    im = Image.fromarray(np.uint8(cm.gist_earth(pgm)*255))
-    im.show()
+    pgm = np.array(read_pgm(f))
+    pgm = pgm/255
+    print(np.amax(pgm))
+    im = Image.fromarray(np.uint8(cm.gist_gray(pgm)*255))
+    # im.show()
+    hist, bin_edges = np.histogram(im, bins=range(0, 257))
+    print(hist)
+    # plot = plt.plot(np.arange(0, 256), hist)
+    frequency_table = {key: value for key, value in zip(bin_edges[0:256], hist)}
+    print(frequency_table)
+    # plt.plot(np.arange(0, 256), frequency_table)
+    
 
-
-# hist, bin_edges = numpy.histogram(a=im,
-#                                   bins=range(0, 257))
-# frequency_table = {key: value for key, value in zip(bin_edges[0:256], hist)}
