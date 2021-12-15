@@ -89,10 +89,11 @@ def arithmetic_coding(input_list):
         print(
             f'element bounds: lower - {element_lower_bound} | upper - {element_upper_bound}')
 
+        height = current_upper_bound - current_lower_bound
         current_lower_bound = current_lower_bound + \
             (current_upper_bound - current_lower_bound) * element_lower_bound
         current_upper_bound = current_lower_bound + \
-            (element_upper_bound * (current_upper_bound - current_lower_bound))
+            (height * (element_upper_bound - element_lower_bound))
         # currant_radius = current_upper_bound - current_lower_bound
 
         i += 1
