@@ -65,32 +65,82 @@ def calculate_prob_mass(input_list):
 
 
 def arithmetic_coding(input_list):
-    prob_mass = calculate_prob_mass(input_list)
-    prob_table = calculate_prob_table(input_list)
+    # prob_mass = calculate_prob_mass(input_list)
+    # prob_table = calculate_prob_table(input_list)
+    prob_mass = calculate_prob_mass('AEKMRTYATY')
+    prob_table = calculate_prob_table('AEKMRTYATY')
 
     passed_elements = []
 
-    current_bound = prob_mass[input_list[0]][0]
-    print('first bound')
-    print(current_bound)
+    current_lower_bound = prob_mass[input_list[0]][0]
+    current_upper_bound = prob_mass[input_list[0]][1]
+    # currant_radius = current_upper_bound - current_lower_bound
 
     i = 0
     for element in input_list:
-        # element_bounds = prob_mass[element][0]
-        current_offset = 1
-        passed_elements.append(element)
-        for passed_element in passed_elements:
-            current_offset *= prob_table[passed_element]
-        if len(passed_elements) > 1:
-            current_bound += current_offset
-        print(f'iteration {i}')
-        print(current_bound)
-        print(current_offset)
-        i += 1
+        if i == 0:
+            i += 1
+            continue
+        print(f'===> ITERATION {i}')
+        print(
+            f'in bounds: lower - {current_lower_bound} | upper - {current_upper_bound}')
+        element_lower_bound = prob_mass[element][0]
+        element_upper_bound = prob_mass[element][1]
+        print(
+            f'element bounds: lower - {element_lower_bound} | upper - {element_upper_bound}')
 
-    print('prob mass table')
-    print(prob_mass)
-    return current_bound
+        current_lower_bound = current_lower_bound + \
+            (current_upper_bound - current_lower_bound) * element_lower_bound
+        current_upper_bound = current_lower_bound + \
+            (element_upper_bound * (current_upper_bound - current_lower_bound))
+        # currant_radius = current_upper_bound - current_lower_bound
+
+        i += 1
+        print(
+            f'out bounds: lower - {current_lower_bound} | upper - {current_upper_bound}')
+
+    # print(f'===> iteration {i}')
+    # print(f'in bound: {current_bound}')
+    # element_bounds = prob_mass[element][0]
+    # current_offset = 1
+    #  passed_elements.append(element)
+    #   print(passed_elements)
+
+    #    for passed_element in passed_elements:
+    #         current_offset *= prob_mass[passed_element][0]
+    #         print(f'offset-multiply: {prob_table[passed_element]}')
+    #     if len(passed_elements) > 1:
+    #         current_bound += current_offset
+    #     print(f'out bound: {current_bound}')
+    #     print(current_offset)
+    #     i += 1
+
+    # print('prob mass table')
+    # print(prob_mass)
+    return [current_lower_bound, prob_table, prob_mass]
+
+
+def arithmetic_decoding(input, prob_mass, prob_table):
+    symbols = []
+    divider = 1
+    lower_bound = 0
+    i = 0
+    while input > 0:
+        current_key = ''
+        for key in prob_mass:
+            bounds = prob_mass[key]
+            print(f'curr check: {input} {bounds[0]} {bounds[1]}')
+            if input > bounds[0] and input < bounds[1]:
+                current_key = key
+                lower_bound = bounds[0]
+        symbols.append(current_key)
+        print(f'result: {input} {prob_table[current_key]}')
+        if input < 0.0001:
+            input = 0
+        else:
+            input = (input - lower_bound) / prob_table[current_key]
+
+    return symbols
 
 
 if __name__ == '__main__':
@@ -118,6 +168,7 @@ if __name__ == '__main__':
         mass_sum += probability
     flat_pgm = flat_arr(pgm)
 
-    test_input = ['C', 'D', 'B', 'C', 'D']
-
-    print(arithmetic_coding(test_input))
+    test_input = list('ARYTMETYKA')
+    result, prob_table, prob_mass = arithmetic_coding(test_input)
+    print(result)
+    # print(arithmetic_decoding(0.03968, prob_mass, prob_table))
