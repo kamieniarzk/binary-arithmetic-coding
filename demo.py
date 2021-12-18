@@ -121,6 +121,13 @@ def arithmetic_coding(input_list):
     return [current_lower_bound, prob_table, prob_mass]
 
 
+def printB(binarty_int):
+    print_num = bin(binarty_int)[2:]
+    while len(print_num) < 8:
+        print_num = '0' + print_num
+    print(print_num)
+
+
 def arithmetic_decoding(input, prob_mass, prob_table):
     symbols = []
     divider = 1
@@ -141,7 +148,78 @@ def arithmetic_decoding(input, prob_mass, prob_table):
         else:
             input = (input - lower_bound) / prob_table[current_key]
 
+        i += 1
+        if i > 10:
+            input = 0
+
     return symbols
+
+
+def shift_left_16(number, fill_bit):
+    shifted = (number << 1) & int(f'0000000011111111', 2)
+    return shifted | int(f'0000000{fill_bit}', 2)
+
+
+def shift_right_16(number, shift_number):
+    return (number >> shift_number) & int('0000000011111111', 2)
+
+
+def get_oldest_bit(number):
+    number = number & int('0000000011111111', 2)
+    return (number & int('10000000', 2)) >> 7
+
+
+def integer_arithmetic_encoding(input_list):
+    freq_map = calculate_freq_table(input_list)
+    sum_of_all = np.sum(list(freq_map.values()))
+    D = int('00000000', 2)
+    G = int('11111111', 2)
+    LN = 0
+    k = 0
+    prev_element = input_list[0]
+    out_list = []
+
+    print('Starting integer encoding...')
+    printB(D)
+    printB(G)
+
+    for element in input_list:
+        print(f'iteration: {k}')
+        R = G - D + 1
+        D = (D + round(R * freq_map[prev_element] /
+                       sum_of_all)) if k != 0 else int('00000000', 2)
+        G = D + round(R * freq_map[element] / sum_of_all) - 1
+
+        printB(D)
+        printB(G)
+        D_oldest_bit = get_oldest_bit(D)
+        G_oldest_bit = get_oldest_bit(G)
+
+        print(D_oldest_bit)
+        print(G_oldest_bit)
+
+        if D_oldest_bit == G_oldest_bit:
+            while D_oldest_bit == G_oldest_bit:
+                out_list.append(G_oldest_bit)
+                D = shift_left_16(D, 0)
+                G = shift_left_16(G, 1)
+                print(f'>>> OUT: {G_oldest_bit}')
+                D_oldest_bit = get_oldest_bit(D)
+                G_oldest_bit = get_oldest_bit(G)
+
+                print(D_oldest_bit)
+                print(G_oldest_bit)
+
+            for i in range(LN):
+                out_list.append(1 - G_oldest_bit)
+            LN = 0
+        else:
+            D = shift_left_16(D, 0) | int(f'{D_oldest_bit}0000000', 2)
+            G = shift_left_16(G, 0) | int(f'{G_oldest_bit}0000000', 2)
+            LN += 1
+
+        k += 1
+    return out_list
 
 
 if __name__ == '__main__':
@@ -170,6 +248,8 @@ if __name__ == '__main__':
     flat_pgm = flat_arr(pgm)
 
     test_input = list('ARYTMETYKA')
-    result, prob_table, prob_mass = arithmetic_coding(test_input)
-    print(result)
-    # print(arithmetic_decoding(0.03968, prob_mass, prob_table))
+    # result, prob_table, prob_mass = arithmetic_coding(test_input)
+    # print(result)
+    # print(arithmetic_decoding(result, prob_mass, prob_table))
+    res = integer_arithmetic_encoding(test_input)
+    print(''.join(list(map(str, res))))
