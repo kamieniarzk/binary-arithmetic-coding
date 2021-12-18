@@ -2,6 +2,7 @@ import numpy as np
 from PIL import Image
 from matplotlib import cm
 from matplotlib import pyplot as plt
+import math
 
 
 def read_pgm(pgmf):
@@ -125,7 +126,7 @@ def printB(binarty_int):
     print_num = bin(binarty_int)[2:]
     while len(print_num) < 8:
         print_num = '0' + print_num
-    print(print_num)
+    print(print_num + ' (' + str(binarty_int) + ')')
 
 
 def arithmetic_decoding(input, prob_mass, prob_table):
@@ -157,6 +158,8 @@ def arithmetic_decoding(input, prob_mass, prob_table):
 
 def shift_left_16(number, fill_bit):
     shifted = (number << 1) & int(f'0000000011111111', 2)
+    print(f'shifted:')
+    printB(shifted)
     return shifted | int(f'0000000{fill_bit}', 2)
 
 
@@ -189,9 +192,9 @@ def integer_arithmetic_encoding(input_list):
         current_interval = prob_map[element]
         R = G - D + 1
         ORG_D = D
-        D = (D + round(R * current_interval[0]))
-        G = ORG_D + round(R * current_interval[1]) - 1
-
+        D = (D + math.floor(R * current_interval[0]))
+        G = ORG_D + math.floor(R * current_interval[1]) - 1
+        print(current_interval)
         print(R)
         printB(D)
         printB(G)
@@ -213,9 +216,9 @@ def integer_arithmetic_encoding(input_list):
 
             LN = 0
         else:
-            D = (shift_left_16(D, 0) & int('01111111')) | int(
+            D = (shift_left_16(D, 0) & int('01111111', 2)) | int(
                 f'{D_oldest_bit}0000000', 2)
-            G = (shift_left_16(G, 1) & int('01111111')) | int(
+            G = (shift_left_16(G, 1) & int('01111111', 2)) | int(
                 f'{G_oldest_bit}0000000', 2)
             LN += 1
             print('shifted D,G incremented LN')
@@ -223,7 +226,7 @@ def integer_arithmetic_encoding(input_list):
             printB(G)
 
         k += 1
-        print('>> After iteration: (D, G):')
+        print('>> After iteration: (D, G, LN):')
         printB(D)
         printB(G)
         printB(LN)
