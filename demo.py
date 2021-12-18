@@ -171,6 +171,7 @@ def get_oldest_bit(number):
 
 def integer_arithmetic_encoding(input_list):
     freq_map = calculate_freq_table(input_list)
+    prob_map = calculate_prob_mass('AEKMRTYATY')
     sum_of_all = np.sum(list(freq_map.values()))
     D = int('00000000', 2)
     G = int('11111111', 2)
@@ -184,19 +185,18 @@ def integer_arithmetic_encoding(input_list):
     printB(G)
 
     for element in input_list:
-        print(f'iteration: {k}')
+        print(f'\n>>>> iteration: {k}, Element: {element}')
+        current_interval = prob_map[element]
         R = G - D + 1
-        D = (D + round(R * freq_map[prev_element] /
-                       sum_of_all)) if k != 0 else int('00000000', 2)
-        G = D + round(R * freq_map[element] / sum_of_all) - 1
+        ORG_D = D
+        D = (D + round(R * current_interval[0]))
+        G = ORG_D + round(R * current_interval[1]) - 1
 
+        print(R)
         printB(D)
         printB(G)
         D_oldest_bit = get_oldest_bit(D)
         G_oldest_bit = get_oldest_bit(G)
-
-        print(D_oldest_bit)
-        print(G_oldest_bit)
 
         if D_oldest_bit == G_oldest_bit:
             while D_oldest_bit == G_oldest_bit:
@@ -207,18 +207,26 @@ def integer_arithmetic_encoding(input_list):
                 D_oldest_bit = get_oldest_bit(D)
                 G_oldest_bit = get_oldest_bit(G)
 
-                print(D_oldest_bit)
-                print(G_oldest_bit)
-
             for i in range(LN):
                 out_list.append(1 - G_oldest_bit)
+                print(f'>>> OUT: {1 - G_oldest_bit}')
+
             LN = 0
         else:
-            D = shift_left_16(D, 0) | int(f'{D_oldest_bit}0000000', 2)
-            G = shift_left_16(G, 0) | int(f'{G_oldest_bit}0000000', 2)
+            D = (shift_left_16(D, 0) & int('01111111')) | int(
+                f'{D_oldest_bit}0000000', 2)
+            G = (shift_left_16(G, 1) & int('01111111')) | int(
+                f'{G_oldest_bit}0000000', 2)
             LN += 1
+            print('shifted D,G incremented LN')
+            printB(D)
+            printB(G)
 
         k += 1
+        print('>> After iteration: (D, G):')
+        printB(D)
+        printB(G)
+        printB(LN)
     return out_list
 
 
