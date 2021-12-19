@@ -187,8 +187,7 @@ def arithmetic_decoding(input, prob_mass, prob_table):
 
 def shift_left_16(number, fill_bit):
     shifted = (number << 1) & int(f'0000000011111111', 2)
-    print(f'shifted:')
-    printB(shifted)
+    printB(shifted, 'shifted')
     return shifted | int(f'0000000{fill_bit}', 2)
 
 
@@ -247,7 +246,8 @@ def integer_arithmetic_encoding(input_list):
                 D_oldest_bit = get_oldest_bit(D)
                 G_oldest_bit = get_oldest_bit(G)
 
-        else:
+        #else:
+        elif (D & int('11000000', 2) == int('01000000')) and (G & int('11000000', 2) == int('10000000')):
             D = (shift_left_16(D, 0) & int('01111111', 2)) | int(
                 f'{D_oldest_bit}0000000', 2)
             G = (shift_left_16(G, 1) & int('01111111', 2)) | int(
@@ -304,9 +304,11 @@ def integer_arithmetic_encoding(input_list):
 
 
 def find_symbol_in_prob_map(value, prob_map):
+    print(f'FIND SYMBOL: {value}')
+    print(f'PROB_MAP: {prob_map}')
     for symbol in prob_map:
         current_interval = prob_map[symbol]
-        if value > current_interval[0] and value < current_interval[1]:
+        if value >= current_interval[0] and value < current_interval[1]:
             return symbol
 
     return 'ERROR'
@@ -337,6 +339,8 @@ def integer_arithmetic_decoding(input_string, prob_map, N):
         print('IN Kn=')
         printB(Kn, 'Kn')
 
+        print(f'current symbol: {current_symbol}')
+        print(f'prob map: {prob_map}')
         current_interval = prob_map[current_symbol]
         ORG_D = D
         D = (D + math.floor(R * current_interval[0] / N))
@@ -409,6 +413,8 @@ def test_code():
 
     for message in messages:
         print(message)
+
+    #test_arithmetic_encoding_decoding('AAC')
 
 
 if __name__ == '__main__':
