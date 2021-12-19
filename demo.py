@@ -38,6 +38,7 @@ def calculate_freq_table(input_list):
 
 
 def calculate_prob_table_from_freq(freq_map):
+    '''@depracated'''
     sum_of_all = np.sum(list(freq_map.values()))
     prob_map = {}
     for key in freq_map:
@@ -46,11 +47,13 @@ def calculate_prob_table_from_freq(freq_map):
 
 
 def calculate_prob_table(input_list):
+    '''@depracated'''
     freq_table = calculate_freq_table(input_list)
     return calculate_prob_table_from_freq(freq_table)
 
 
 def calculate_prob_mass_from_prob_table(prob_map):
+    '''@depracated'''
     prev_el = 0
     prob_mass_map = {}
     for key in prob_map:
@@ -61,8 +64,30 @@ def calculate_prob_mass_from_prob_table(prob_map):
 
 
 def calculate_prob_mass(input_list):
+    '''@depracated'''
     table = calculate_prob_table(input_list)
     return calculate_prob_mass_from_prob_table(table)
+
+
+def calculate_integer_prob_mass_from_freq_table(freq_table):
+    prob_map = {}
+    prev_freq = 0
+    for symbol in freq_table:
+        current_upper_bound = freq_table[symbol] + prev_freq
+        prob_map[symbol] = [prev_freq, current_upper_bound]
+        prev_freq = current_upper_bound
+
+    return prob_map
+
+
+def calculate_integer_prob_mass(input_list):
+    freq_table = calculate_freq_table(input_list)
+    return calculate_integer_prob_mass_from_freq_table(freq_table)
+
+
+def calculate_sum_of_all(input_list):
+    freq_table = calculate_freq_table(input_list)
+    return np.sum(list(freq_table.values()))
 
 
 def arithmetic_coding(input_list):
@@ -122,11 +147,11 @@ def arithmetic_coding(input_list):
     return [current_lower_bound, prob_table, prob_mass]
 
 
-def printB(binarty_int):
+def printB(binarty_int, variable=''):
     print_num = bin(binarty_int)[2:]
     while len(print_num) < 8:
         print_num = '0' + print_num
-    print(print_num + ' (' + str(binarty_int) + ')')
+    print(variable + ': ' + print_num + ' (' + str(binarty_int) + ')')
 
 
 def join_int_list(int_list):
@@ -178,9 +203,9 @@ def get_oldest_bit(number):
 
 def integer_arithmetic_encoding(input_list):
     freq_map = calculate_freq_table(input_list)
-    prob_map = calculate_prob_mass('AEKMRTYATY')
-    # prob_map = calculate_prob_mass(input_list)
-    sum_of_all = np.sum(list(freq_map.values()))
+    # prob_map = calculate_prob_mass('AEKMRTYATY')
+    prob_map = calculate_integer_prob_mass(input_list)
+    N = calculate_sum_of_all(input_list)
     D = int('00000000', 2)
     G = int('11111111', 2)
     LN = 0
@@ -189,20 +214,20 @@ def integer_arithmetic_encoding(input_list):
     out_list = []
 
     print('Starting integer encoding...')
-    printB(D)
-    printB(G)
+    printB(D, 'D')
+    printB(G, 'G')
 
     for element in input_list:
         print(f'\n>>>> iteration: {k}, Element: {element}')
         current_interval = prob_map[element]
         R = G - D + 1
         ORG_D = D
-        D = (D + math.floor(R * current_interval[0]))
-        G = ORG_D + math.floor(R * current_interval[1]) - 1
+        D = (D + math.floor(R * current_interval[0] / N))
+        G = ORG_D + math.floor(R * current_interval[1] / N) - 1
         print(current_interval)
         print(R)
-        printB(D)
-        printB(G)
+        printB(D, 'D')
+        printB(G, 'G')
         D_oldest_bit = get_oldest_bit(D)
         G_oldest_bit = get_oldest_bit(G)
 
@@ -229,13 +254,13 @@ def integer_arithmetic_encoding(input_list):
                 f'{G_oldest_bit}0000000', 2)
             LN += 1
             print('shifted D,G incremented LN')
-            printB(D)
-            printB(G)
+            printB(D, 'D')
+            printB(G, 'G')
 
         k += 1
         print('>> After iteration: (D, G, LN):')
-        printB(D)
-        printB(G)
+        printB(D, 'D')
+        printB(G, 'G')
         printB(LN)
 
     seen_1 = False
@@ -256,7 +281,10 @@ def integer_arithmetic_encoding(input_list):
     if seen_1:
         out_list += ending
 
-    return out_list, prob_map
+    print('>> Encoding finished, output:')
+    print(''.join(list(map(str, out_list))))
+
+    return [out_list, prob_map, N]
 
 
 def find_symbol_in_prob_map(value, prob_map):
@@ -268,40 +296,46 @@ def find_symbol_in_prob_map(value, prob_map):
     return 'ERROR'
 
 
-def integer_arithmetic_decoding(input_string, prob_map):
+def integer_arithmetic_decoding(input_string, prob_map, N):
     D = int('00000000', 2)
     G = int('11111111', 2)
     R = int('100000000', 2)
     LS = 1
+    # int_prob_map = {}
+    # for key in prob_map:
+    #     interval = prob_map[key]
+    #     int_prob_map[key] = ([interval[0] * N, interval[1] * N])
+
     Kn = int(join_int_list(input_string[:8]), 2)
     output = []
     k = 0
     input_string_counter = 8
 
-    while input_string_counter < len(input_string) and k < 10:
+    while k < N:
         R = G - D + 1
-        current_value = Kn / R
+        current_value = ((Kn - D + 1) * N - 1) / R
         current_symbol = find_symbol_in_prob_map(current_value, prob_map)
         output.append(current_symbol)
         print(
-            f'\n>>>> iteration: {k}, currValue={current_value},  input_counter={input_string_counter}, symbol={current_symbol}, Kn = {Kn}')
+            f'\n>>>> iteration: {k}, current_value={current_value}  input_counter={input_string_counter}, symbol={current_symbol}, Kn = {Kn}')
         print('IN Kn=')
-        printB(Kn)
+        printB(Kn, 'Kn')
 
         current_interval = prob_map[current_symbol]
         ORG_D = D
-        D = (D + math.floor(R * current_interval[0]))
-        G = ORG_D + math.floor(R * current_interval[1]) - 1
+        D = (D + math.floor(R * current_interval[0] / N))
+        G = ORG_D + math.floor(R * current_interval[1] / N) - 1
         print(current_interval)
         print(R)
-        printB(D)
-        printB(G)
+        printB(D, 'D')
+        printB(G, 'G')
         D_oldest_bit = get_oldest_bit(D)
         G_oldest_bit = get_oldest_bit(G)
 
         if D_oldest_bit == G_oldest_bit:
             while D_oldest_bit == G_oldest_bit:
-                Kn = shift_left_16(Kn, int(input_string[input_string_counter]))
+                Kn = shift_left_16(Kn, int(
+                    input_string[input_string_counter] if input_string_counter < len(input_string) else 0))
                 input_string_counter += 1
                 D = shift_left_16(D, 0)
                 G = shift_left_16(G, 1)
@@ -311,61 +345,49 @@ def integer_arithmetic_decoding(input_string, prob_map):
                 #     output.append(1 - G_oldest_bit)
                 #     print(f'>>> OUT from LN: {1 - G_oldest_bit}')
 
-                LN = 0
-
                 D_oldest_bit = get_oldest_bit(D)
                 G_oldest_bit = get_oldest_bit(G)
 
-        else:
-            D = (shift_left_16(D, 0) & int('01111111', 2)) | int(
-                f'{D_oldest_bit}0000000', 2)
-            G = (shift_left_16(G, 1) & int('01111111', 2)) | int(
-                f'{G_oldest_bit}0000000', 2)
-            LN += 1
-            print('shifted D,G incremented LN')
-            printB(D)
-            printB(G)
-
         k += 1
-        print('>> After iteration: (D, G, Kn):')
-        printB(D)
-        printB(G)
+        print('>> After iteration: (D, G, R, Kn):')
+        printB(D, 'D')
+        printB(G, 'G')
         printB(R)
-        printB(Kn)
+        printB(Kn, 'Kn')
 
     return output
 
 
 if __name__ == '__main__':
-    f = open('boat.pgm', 'rb')
-    pgm = np.array(read_pgm(f))
-    pgm = pgm/255
-    print(np.amax(pgm))
-    im = Image.fromarray(np.uint8(cm.gist_gray(pgm)*255))
-    # im.show()
-    hist, bin_edges = np.histogram(im, bins=range(0, 257))
-    print(hist)
-    # plot = plt.plot(np.arange(0, 256), hist)
-    frequency_table = {key: value for key,
-                       value in zip(bin_edges[0:256], hist)}
-    print(frequency_table)
-    # plt.plot(np.arange(0, 256), frequency_table)
-    sum_of_all = np.sum(list(frequency_table.values()))
-    frequency_list = list(frequency_table.values())
-    print('SUM')
-    probability_list = frequency_list/sum_of_all
-    probability_mass = []
-    mass_sum = 0
-    for probability in probability_list:
-        probability_mass.append(probability + mass_sum)
-        mass_sum += probability
-    flat_pgm = flat_arr(pgm)
+    # f = open('boat.pgm', 'rb')
+    # pgm = np.array(read_pgm(f))
+    # pgm = pgm/255
+    # print(np.amax(pgm))
+    # im = Image.fromarray(np.uint8(cm.gist_gray(pgm)*255))
+    # # im.show()
+    # hist, bin_edges = np.histogram(im, bins=range(0, 257))
+    # print(hist)
+    # # plot = plt.plot(np.arange(0, 256), hist)
+    # frequency_table = {key: value for key,
+    #                    value in zip(bin_edges[0:256], hist)}
+    # print(frequency_table)
+    # # plt.plot(np.arange(0, 256), frequency_table)
+    # sum_of_all = np.sum(list(frequency_table.values()))
+    # frequency_list = list(frequency_table.values())
+    # print('SUM')
+    # probability_list = frequency_list/sum_of_all
+    # probability_mass = []
+    # mass_sum = 0
+    # for probability in probability_list:
+    #     probability_mass.append(probability + mass_sum)
+    #     mass_sum += probability
+    # flat_pgm = flat_arr(pgm)
 
-    test_input = list('ARYTMETYKA')
+    test_input = list('AB')
     # result, prob_table, prob_mass = arithmetic_coding(test_input)
     # print(result)
     # print(arithmetic_decoding(result, prob_mass, prob_table))
-    output, prob_map = integer_arithmetic_encoding(test_input)
-    print(''.join(list(map(str, output))))
-    decoded = integer_arithmetic_decoding(output, prob_map)
+    output, prob_map, N = integer_arithmetic_encoding(test_input)
+    print(prob_map)
+    decoded = integer_arithmetic_decoding(output, prob_map, N)
     print(decoded)
