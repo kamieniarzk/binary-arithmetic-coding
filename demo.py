@@ -4,6 +4,12 @@ from matplotlib import cm
 from matplotlib import pyplot as plt
 from bitstring import BitArray
 import math
+import re
+
+
+def custom_print(input):
+    return
+    custom_print(input)
 
 
 def read_pgm(pgmf):
@@ -108,12 +114,12 @@ def arithmetic_coding(input_list):
         if i == 0:
             i += 1
             continue
-        print(f'===> ITERATION {i}')
-        print(
+        custom_print(f'===> ITERATION {i}')
+        custom_print(
             f'in bounds: lower - {current_lower_bound} | upper - {current_upper_bound}')
         element_lower_bound = prob_mass[element][0]
         element_upper_bound = prob_mass[element][1]
-        print(
+        custom_print(
             f'element bounds: lower - {element_lower_bound} | upper - {element_upper_bound}')
 
         height = current_upper_bound - current_lower_bound
@@ -124,27 +130,27 @@ def arithmetic_coding(input_list):
         # currant_radius = current_upper_bound - current_lower_bound
 
         i += 1
-        print(
+        custom_print(
             f'out bounds: lower - {current_lower_bound} | upper - {current_upper_bound}')
 
-    # print(f'===> iteration {i}')
-    # print(f'in bound: {current_bound}')
+    # custom_print(f'===> iteration {i}')
+    # custom_print(f'in bound: {current_bound}')
     # element_bounds = prob_mass[element][0]
     # current_offset = 1
     #  passed_elements.append(element)
-    #   print(passed_elements)
+    #   custom_print(passed_elements)
 
     #    for passed_element in passed_elements:
     #         current_offset *= prob_mass[passed_element][0]
-    #         print(f'offset-multiply: {prob_table[passed_element]}')
+    #         custom_print(f'offset-multiply: {prob_table[passed_element]}')
     #     if len(passed_elements) > 1:
     #         current_bound += current_offset
-    #     print(f'out bound: {current_bound}')
-    #     print(current_offset)
+    #     custom_print(f'out bound: {current_bound}')
+    #     custom_print(current_offset)
     #     i += 1
 
-    # print('prob mass table')
-    # print(prob_mass)
+    # custom_print('prob mass table')
+    # custom_print(prob_mass)
     return [current_lower_bound, prob_table, prob_mass]
 
 
@@ -152,7 +158,7 @@ def printB(binarty_int, variable=''):
     print_num = bin(binarty_int)[2:]
     while len(print_num) < 8:
         print_num = '0' + print_num
-    print(variable + ': ' + print_num + ' (' + str(binarty_int) + ')')
+    custom_print(variable + ': ' + print_num + ' (' + str(binarty_int) + ')')
 
 
 def getBinaryFromInt(curr_int):
@@ -175,12 +181,12 @@ def arithmetic_decoding(input, prob_mass, prob_table):
         current_key = ''
         for key in prob_mass:
             bounds = prob_mass[key]
-            print(f'curr check: {input} {bounds[0]} {bounds[1]}')
+            custom_print(f'curr check: {input} {bounds[0]} {bounds[1]}')
             if input > bounds[0] and input < bounds[1]:
                 current_key = key
                 lower_bound = bounds[0]
         symbols.append(current_key)
-        print(f'result: {input} {prob_table[current_key]}')
+        custom_print(f'result: {input} {prob_table[current_key]}')
         if input < 0.0001:
             input = 0
         else:
@@ -220,19 +226,19 @@ def integer_arithmetic_encoding(input_list):
     prev_element = input_list[0]
     out_list = []
 
-    print('Starting integer encoding...')
+    custom_print('Starting integer encoding...')
     printB(D, 'D')
     printB(G, 'G')
 
     for element in input_list:
-        print(f'\n>>>> iteration: {k}, Element: {element}')
+        custom_print(f'\n>>>> iteration: {k}, Element: {element}')
         current_interval = prob_map[element]
         R = G - D + 1
         ORG_D = D
         D = (D + math.floor(R * current_interval[0] / N))
         G = ORG_D + math.floor(R * current_interval[1] / N) - 1
-        print(current_interval)
-        print(R)
+        custom_print(current_interval)
+        custom_print(R)
         printB(D, 'D')
         printB(G, 'G')
         D_oldest_bit = get_oldest_bit(D)
@@ -243,11 +249,11 @@ def integer_arithmetic_encoding(input_list):
                 out_list.append(G_oldest_bit)
                 D = shift_left_16(D, 0)
                 G = shift_left_16(G, 1)
-                print(f'>>> OUT: {G_oldest_bit}')
+                custom_print(f'>>> OUT: {G_oldest_bit}')
 
                 for i in range(LN):
                     out_list.append(1 - G_oldest_bit)
-                    print(f'>>> OUT from LN: {1 - G_oldest_bit}')
+                    custom_print(f'>>> OUT from LN: {1 - G_oldest_bit}')
 
                 LN = 0
 
@@ -261,7 +267,7 @@ def integer_arithmetic_encoding(input_list):
                 G = (shift_left_16(G, 1) & int('01111111', 2)) | int(
                     f'{G_oldest_bit}0000000', 2)
                 LN += 1
-                print('shifted D,G incremented LN')
+                custom_print('shifted D,G incremented LN')
                 printB(D, 'D')
                 printB(G, 'G')
 
@@ -275,12 +281,12 @@ def integer_arithmetic_encoding(input_list):
         #         G = (shift_left_16(G, 1) & int('01111111', 2)) | int(
         #             f'{G_oldest_bit}0000000', 2)
         #         LN += 1
-        #         print('shifted D,G incremented LN')
+        #         custom_print('shifted D,G incremented LN')
         #         printB(D, 'D')
         #         printB(G, 'G')
 
         k += 1
-        print('>> After iteration: (D, G, LN):')
+        custom_print('>> After iteration: (D, G, LN):')
         printB(D, 'D')
         printB(G, 'G')
         printB(LN)
@@ -290,12 +296,12 @@ def integer_arithmetic_encoding(input_list):
     current_bit = 0
     k = 0
 
-    print('Out D:')
+    custom_print('Out D:')
     printB(D, 'D')
     last_bit = D & int('00000001', 2)
 
-    print('Out Output:')
-    print(out_list)
+    custom_print('Out Output:')
+    custom_print(out_list)
 
     while last_bit == 0 and k < 8:
         D = shift_right_16(D, 1)
@@ -312,15 +318,15 @@ def integer_arithmetic_encoding(input_list):
     else:
         out_list += [0, 0, 0, 0, 0, 0, 0, 0]
 
-    print('Out Ending:')
-    print(ending)
+    custom_print('Out Ending:')
+    custom_print(ending)
 
     # while len(out_list) < 8:
     #     # out_list.append(0)
     #     out_list.insert(0, last_bit)
 
-    print('>> Encoding finished, output:')
-    print(''.join(list(map(str, out_list))))
+    custom_print('>> Encoding finished, output:')
+    custom_print(''.join(list(map(str, out_list))))
 
     return [out_list, prob_map, N]
 
@@ -337,12 +343,12 @@ def binary_integer_arithmetic_encoding(input_list):
     prev_element = input_list[0]
     out_list = []
 
-    print('Starting integer encoding...')
+    custom_print('Starting integer encoding...')
     printB(D, 'D')
     printB(G, 'G')
 
     for element in input_list:
-        print(f'\n>>>> iteration: {k}, Element: {element}')
+        custom_print(f'\n>>>> iteration: {k}, Element: {element}')
         R = G - D + 1
         # R1 = R * prob_map[1][0] / N
         # if element == 1:
@@ -353,8 +359,8 @@ def binary_integer_arithmetic_encoding(input_list):
         ORG_D = D
         D = (D + math.floor(R * current_interval[0] / N))
         G = ORG_D + math.floor(R * current_interval[1] / N) - 1
-        print(current_interval)
-        print(R)
+        custom_print(current_interval)
+        custom_print(R)
         printB(D, 'D')
         printB(G, 'G')
         D_oldest_bit = get_oldest_bit(D)
@@ -364,11 +370,11 @@ def binary_integer_arithmetic_encoding(input_list):
             out_list.append(G_oldest_bit)
             D = shift_left_16(D, 0)
             G = shift_left_16(G, 1)
-            print(f'>>> OUT: {G_oldest_bit}')
+            custom_print(f'>>> OUT: {G_oldest_bit}')
 
             for i in range(LN):
                 out_list.append(1 - G_oldest_bit)
-                print(f'>>> OUT from LN: {1 - G_oldest_bit}')
+                custom_print(f'>>> OUT from LN: {1 - G_oldest_bit}')
 
             LN = 0
 
@@ -376,7 +382,7 @@ def binary_integer_arithmetic_encoding(input_list):
             G_oldest_bit = get_oldest_bit(G)
 
         k += 1
-        print('>> After iteration: (D, G, LN):')
+        custom_print('>> After iteration: (D, G, LN):')
         printB(D, 'D')
         printB(G, 'G')
         printB(LN)
@@ -385,12 +391,12 @@ def binary_integer_arithmetic_encoding(input_list):
     current_bit = 0
     k = 0
 
-    print('Out D:')
+    custom_print('Out D:')
     printB(D, 'D')
     last_bit = D & int('00000001', 2)
 
-    print('Out Output:')
-    print(out_list)
+    custom_print('Out Output:')
+    custom_print(out_list)
 
     while last_bit == 0 and k < 8:
         D = shift_right_16(D, 1)
@@ -405,22 +411,22 @@ def binary_integer_arithmetic_encoding(input_list):
 
         out_list += ending
 
-    print('Out Ending:')
-    print(ending)
+    custom_print('Out Ending:')
+    custom_print(ending)
 
     # while len(out_list) < 8:
     #     # out_list.append(0)
     #     out_list.insert(0, last_bit)
 
-    print('>> Encoding finished, output:')
-    print(''.join(list(map(str, out_list))))
+    custom_print('>> Encoding finished, output:')
+    custom_print(''.join(list(map(str, out_list))))
 
     return [out_list, prob_map, N]
 
 
 def find_symbol_in_prob_map(value, prob_map):
-    print(f'FIND SYMBOL: {value}')
-    print(f'PROB_MAP: {prob_map}')
+    custom_print(f'FIND SYMBOL: {value}')
+    custom_print(f'PROB_MAP: {prob_map}')
     for symbol in prob_map:
         current_interval = prob_map[symbol]
         if value >= current_interval[0] and value < current_interval[1]:
@@ -449,19 +455,19 @@ def integer_arithmetic_decoding(input_string, prob_map, N):
         current_value = ((Kn - D + 1) * N - 1) / R
         current_symbol = find_symbol_in_prob_map(current_value, prob_map)
         output.append(current_symbol)
-        print(
+        custom_print(
             f'\n>>>> iteration: {k}, current_value={current_value}  input_counter={input_string_counter}, symbol={current_symbol}, Kn = {Kn}')
-        print('IN Kn=')
+        custom_print('IN Kn=')
         printB(Kn, 'Kn')
 
-        print(f'current symbol: {current_symbol}')
-        print(f'prob map: {prob_map}')
+        custom_print(f'current symbol: {current_symbol}')
+        custom_print(f'prob map: {prob_map}')
         current_interval = prob_map[current_symbol]
         ORG_D = D
         D = (D + math.floor(R * current_interval[0] / N))
         G = ORG_D + math.floor(R * current_interval[1] / N) - 1
-        print(current_interval)
-        print(R)
+        custom_print(current_interval)
+        custom_print(R)
         printB(D, 'D')
         printB(G, 'G')
         D_oldest_bit = get_oldest_bit(D)
@@ -473,20 +479,20 @@ def integer_arithmetic_decoding(input_string, prob_map, N):
             input_string_counter += 1
             D = shift_left_16(D, 0)
             G = shift_left_16(G, 1)
-            print(f'>>> OUT: {G_oldest_bit}')
+            custom_print(f'>>> OUT: {G_oldest_bit}')
 
             D_oldest_bit = get_oldest_bit(D)
             G_oldest_bit = get_oldest_bit(G)
 
         k += 1
-        print('>> After iteration: (D, G, R, Kn):')
+        custom_print('>> After iteration: (D, G, R, Kn):')
         printB(D, 'D')
         printB(G, 'G')
         printB(R)
         printB(Kn, 'Kn')
 
-    print('>> Decoding finished, output:')
-    print(''.join(list(map(str, output))))
+    custom_print('>> Decoding finished, output:')
+    custom_print(''.join(list(map(str, output))))
 
     return output
 
@@ -511,19 +517,19 @@ def binary_integer_arithmetic_decoding(input_string, prob_map, N):
         current_value = ((Kn - D + 1) * N - 1) / R
         current_symbol = find_symbol_in_prob_map(current_value, prob_map)
         output.append(current_symbol)
-        print(
+        custom_print(
             f'\n>>>> iteration: {k}, current_value={current_value}  input_counter={input_string_counter}, symbol={current_symbol}, Kn = {Kn}')
-        print('IN Kn=')
+        custom_print('IN Kn=')
         printB(Kn, 'Kn')
 
-        print(f'current symbol: {current_symbol}')
-        print(f'prob map: {prob_map}')
+        custom_print(f'current symbol: {current_symbol}')
+        custom_print(f'prob map: {prob_map}')
         current_interval = prob_map[current_symbol]
         ORG_D = D
         D = (D + math.floor(R * current_interval[0] / N))
         G = ORG_D + math.floor(R * current_interval[1] / N) - 1
-        print(current_interval)
-        print(R)
+        custom_print(current_interval)
+        custom_print(R)
         printB(D, 'D')
         printB(G, 'G')
         D_oldest_bit = get_oldest_bit(D)
@@ -535,7 +541,7 @@ def binary_integer_arithmetic_decoding(input_string, prob_map, N):
             input_string_counter += 1
             D = shift_left_16(D, 0)
             G = shift_left_16(G, 1)
-            print(f'>>> OUT: {G_oldest_bit}')
+            custom_print(f'>>> OUT: {G_oldest_bit}')
 
             for i in range(LN):
                 Kn = shift_left_16(Kn, int(
@@ -550,19 +556,19 @@ def binary_integer_arithmetic_decoding(input_string, prob_map, N):
                     f'{D_oldest_bit}0000000', 2)
                 G = (shift_left_16(G, 1) & int('01111111', 2)) | int(
                     f'{G_oldest_bit}0000000', 2)
-                print('shifted D,G incremented LN')
+                custom_print('shifted D,G incremented LN')
                 printB(D, 'D')
                 printB(G, 'G')
 
         k += 1
-        print('>> After iteration: (D, G, R, Kn):')
+        custom_print('>> After iteration: (D, G, R, Kn):')
         printB(D, 'D')
         printB(G, 'G')
         printB(R)
         printB(Kn, 'Kn')
 
-    print('>> Decoding finished, output:')
-    print(''.join(list(map(str, output))))
+    custom_print('>> Decoding finished, output:')
+    custom_print(''.join(list(map(str, output))))
 
     return output
 
@@ -573,7 +579,7 @@ def test_arithmetic_encoding_decoding(input_string):
     messages.append(f'#### TESTING INPUT: {input_string}\n')
     messages.append('#######################################\n')
     output, prob_map, N = integer_arithmetic_encoding(input_string)
-    print(prob_map)
+    custom_print(prob_map)
     decoded = integer_arithmetic_decoding(output, prob_map, N)
     decoded_string = ''.join(list(map(str, decoded)))
     is_success = decoded_string == input_string
@@ -602,7 +608,7 @@ def test_code():
         messages += '\n'
 
     for message in messages:
-        print(message)
+        custom_print(message)
 
     # test_arithmetic_encoding_decoding('AAC')
 
@@ -647,19 +653,19 @@ if __name__ == '__main__':
     # f = open('boat.pgm', 'rb')
     # pgm = np.array(read_pgm(f))
     # pgm = pgm/255
-    # print(np.amax(pgm))
+    # custom_print(np.amax(pgm))
     # im = Image.fromarray(np.uint8(cm.gist_gray(pgm)*255))
     # # im.show()
     # hist, bin_edges = np.histogram(im, bins=range(0, 257))
-    # print(hist)
+    # custom_print(hist)
     # # plot = plt.plot(np.arange(0, 256), hist)
     # frequency_table = {key: value for key,
     #                    value in zip(bin_edges[0:256], hist)}
-    # print(frequency_table)
+    # custom_print(frequency_table)
     # # plt.plot(np.arange(0, 256), frequency_table)
     # sum_of_all = np.sum(list(frequency_table.values()))
     # frequency_list = list(frequency_table.values())
-    # print('SUM')
+    # custom_print('SUM')
     # probability_list = frequency_list/sum_of_all
     # probability_mass = []
     # mass_sum = 0
@@ -670,20 +676,41 @@ if __name__ == '__main__':
 
     # test_input = list('1234567890')
     # result, prob_table, prob_mass = arithmetic_coding(test_input)
-    # print(result)
-    # print(arithmetic_decoding(result, prob_mass, prob_table))
+    # custom_print(result)
+    # custom_print(arithmetic_decoding(result, prob_mass, prob_table))
     # output, prob_map, N = integer_arithmetic_encoding(test_input)
-    # print(prob_map)
+    # custom_print(prob_map)
     # decoded = integer_arithmetic_decoding(output, prob_map, N)
-    # print(decoded)
+    # custom_print(decoded)
 
-    input = read_file_bits('boat.pgm')
+    input = read_file_bits('test.txt')
+    print(input)
 
     output, prob_map, N = integer_arithmetic_encoding(input)
-    print(prob_map)
+    custom_print(prob_map)
+    print(output)
     decoded = integer_arithmetic_decoding(output, prob_map, N)
+    custom_print(decoded)
     print(decoded)
 
-    # test_code_file_output()
+    with open('output.txt', 'wb') as f:
+        out = []
+        bit_counter = 0
+        string = ''
+        for bit in decoded:
+            string += bit
+            bit_counter += 1
+            if bit_counter == 32:
+                print(string)
+                print(int(string, 2).to_bytes(4, 'big'))
+                f.write(int(string[::-1], 2).to_bytes(4, 'little'))
+                bit_counter = 0
+                string = ''
+        print(string)
+        print(int(string, 2).to_bytes(4, 'big'))
+        f.write(int(string, 2).to_bytes(4, 'big'))
+        bit_counter = 0
+        string = ''
+        # test_code_file_output()
 
-    # test_arithmetic_encoding_decoding('1111000010101011101000011111')
+        # test_arithmetic_encoding_decoding('1111000010101011101000011111')
