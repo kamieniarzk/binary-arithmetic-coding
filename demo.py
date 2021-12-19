@@ -662,16 +662,16 @@ def write_bits_to_file(input_bits, output_filename='output.txt'):
         for bit in input_bits:
             string += bit
             bit_counter += 1
-            if bit_counter == 32:
-                f.write(int(string, 2).to_bytes(4, 'big'))
+            if bit_counter == 8:
+                f.write(int(string, 2).to_bytes(1, 'big'))
                 bit_counter = 0
                 string = ''
 
-        while bit_counter > 0 and bit_counter < 32:
-            string += '0'
-            bit_counter += 1
+        # while bit_counter > 0 and bit_counter < 32:
+        #     string += '0'
+        #     bit_counter += 1
 
-        f.write(int(string, 2).to_bytes(4, 'big'))
+        # f.write(int(string, 2).to_bytes(4, 'big'))
 
 
 if __name__ == '__main__':
@@ -708,7 +708,7 @@ if __name__ == '__main__':
     # decoded = integer_arithmetic_decoding(output, prob_map, N)
     # custom_print(decoded)
 
-    input = read_file_bits('boat.pgm')
+    input = read_file_bits('lena.pgm')
     # print(input)
 
     output, prob_map, N = integer_arithmetic_encoding(input)
@@ -720,7 +720,7 @@ if __name__ == '__main__':
     custom_print(decoded)
     # print(decoded)
 
-    write_bits_to_file(decoded, 'boat2.pgm')
+    write_bits_to_file(decoded, 'image.pgm')
     output_file = read_file_bits('output.txt')
     # print(output_file)
 
