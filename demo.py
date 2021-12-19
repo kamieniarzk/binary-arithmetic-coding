@@ -654,6 +654,26 @@ def read_file_bits(filename):
         return out
 
 
+def write_bits_to_file(input_bits, output_filename='output.txt'):
+    with open(output_filename, 'wb') as f:
+        out = []
+        bit_counter = 0
+        string = ''
+        for bit in input_bits:
+            string += bit
+            bit_counter += 1
+            if bit_counter == 32:
+                f.write(int(string, 2).to_bytes(4, 'big'))
+                bit_counter = 0
+                string = ''
+
+        while bit_counter > 0 and bit_counter < 32:
+            string += '0'
+            bit_counter += 1
+
+        f.write(int(string, 2).to_bytes(4, 'big'))
+
+
 if __name__ == '__main__':
     # f = open('boat.pgm', 'rb')
     # pgm = np.array(read_pgm(f))
@@ -688,35 +708,21 @@ if __name__ == '__main__':
     # decoded = integer_arithmetic_decoding(output, prob_map, N)
     # custom_print(decoded)
 
-    input = read_file_bits('test.txt')
-    print(input)
+    input = read_file_bits('boat.pgm')
+    # print(input)
 
     output, prob_map, N = integer_arithmetic_encoding(input)
     custom_print(prob_map)
-    print(output)
+    # print(output)
+    write_bits_to_file(map(str, output), 'compressed.txt')
+
     decoded = integer_arithmetic_decoding(output, prob_map, N)
     custom_print(decoded)
-    print(decoded)
+    # print(decoded)
 
-    with open('output.txt', 'wb') as f:
-        out = []
-        bit_counter = 0
-        string = ''
-        for bit in decoded:
-            string += bit
-            bit_counter += 1
-            if bit_counter == 32:
-                print(string)
-                f.write(int(string, 2).to_bytes(4, 'big'))
-                bit_counter = 0
-                string = ''
-        # print(string)
-        # f.write(int(string, 2).to_bytes(4, 'big'))
-        # bit_counter = 0
-        # string = ''
-        # test_code_file_output()
+    write_bits_to_file(decoded, 'boat2.pgm')
     output_file = read_file_bits('output.txt')
-    print(output_file)
+    # print(output_file)
 
     # bin_array = array("B")
     # bits = ''.join(list(map(str, decoded)))
