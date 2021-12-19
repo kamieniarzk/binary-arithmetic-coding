@@ -707,7 +707,7 @@ if __name__ == '__main__':
             bit_counter += 1
             if bit_counter == 32:
                 print(string)
-                f.write(int(string[::-1], 2).to_bytes(4, 'little'))
+                f.write(int(string, 2).to_bytes(4, 'big'))
                 bit_counter = 0
                 string = ''
         # print(string)
@@ -715,6 +715,8 @@ if __name__ == '__main__':
         # bit_counter = 0
         # string = ''
         # test_code_file_output()
+    output_file = read_file_bits('output.txt')
+    print(output_file)
 
     # bin_array = array("B")
     # bits = ''.join(list(map(str, decoded)))
@@ -728,4 +730,4 @@ if __name__ == '__main__':
     # with open("output.txt", "wb") as f:
     #     f.write(bytes(bin_array))
 
-        # test_arithmetic_encoding_decoding('1111000010101011101000011111')
+    # test_arithmetic_encoding_decoding('1111000010101011101000011111')
