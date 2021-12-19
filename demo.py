@@ -267,19 +267,35 @@ def integer_arithmetic_encoding(input_list):
     ending = []
     current_bit = 0
     k = 0
-    while True:
-        if k > 8:
-            break
-        current_bit = get_oldest_bit(D)
-        if seen_1 and current_bit == 0:
-            break
-        seen_1 = current_bit == 1 or seen_1
-        ending.append(current_bit)
-        D = shift_left_16(D, 0)
+
+    print('Out D:')
+    printB(D, 'D')
+    last_bit = D & int('00000001', 2)
+
+    print('Out Output:')
+    print(out_list)
+
+    while last_bit == 0 and k < 8:
+        D = shift_right_16(D, 1)
+        last_bit = D & int('00000001', 2)
         k += 1
 
-    if seen_1:
+    if k < 8:
+        for i in range(k, 8):
+            last_bit = D & int('00000001', 2)
+            D = shift_right_16(D, 1)
+            ending.insert(0, last_bit)
+
         out_list += ending
+    else:
+        out_list += [0, 0, 0, 0, 0, 0, 0, 0]
+
+    print('Out Ending:')
+    print(ending)
+
+    # while len(out_list) < 8:
+    #     # out_list.append(0)
+    #     out_list.insert(0, last_bit)
 
     print('>> Encoding finished, output:')
     print(''.join(list(map(str, out_list))))
@@ -355,7 +371,44 @@ def integer_arithmetic_decoding(input_string, prob_map, N):
         printB(R)
         printB(Kn, 'Kn')
 
+    print('>> Decoding finished, output:')
+    print(''.join(list(map(str, output))))
+
     return output
+
+
+def test_arithmetic_encoding_decoding(input_string):
+    messages = []
+    messages.append('#######################################')
+    messages.append(f'#### TESTING INPUT: {input_string}')
+    messages.append('#######################################')
+    output, prob_map, N = integer_arithmetic_encoding(input_string)
+    print(prob_map)
+    decoded = integer_arithmetic_decoding(output, prob_map, N)
+    decoded_string = ''.join(list(map(str, decoded)))
+    is_success = decoded_string == input_string
+    if is_success:
+        messages.append('#######################################')
+        messages.append('#### TEST PASSED ######################')
+        messages.append('#######################################')
+    else:
+        messages.append('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
+        messages.append('#### TEST FAILED ######################')
+        messages.append(f'output: {decoded_string}')
+        messages.append('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
+    return messages
+
+
+def test_code():
+    test_strings = ['AB', 'ABC', 'AAC', 'AAAC', 'AAAAC', 'AACC', 'ACAC', 'AABC', 'ACA', '1234567890', '1234567890', 'ARYTMETYKA', '1111100000',
+                    '1234554321', '0000055555', ';lasdjvkop3r92orufe90fuoasdjfvkvnawopsidf0933']
+    messages = []
+    for test_string in test_strings:
+        messages += test_arithmetic_encoding_decoding(test_string)
+        messages += '\n'
+
+    for message in messages:
+        print(message)
 
 
 if __name__ == '__main__':
@@ -383,11 +436,15 @@ if __name__ == '__main__':
     #     mass_sum += probability
     # flat_pgm = flat_arr(pgm)
 
-    test_input = list('AB')
+    # test_input = list('1234567890')
     # result, prob_table, prob_mass = arithmetic_coding(test_input)
     # print(result)
     # print(arithmetic_decoding(result, prob_mass, prob_table))
-    output, prob_map, N = integer_arithmetic_encoding(test_input)
-    print(prob_map)
-    decoded = integer_arithmetic_decoding(output, prob_map, N)
-    print(decoded)
+    # output, prob_map, N = integer_arithmetic_encoding(test_input)
+    # print(prob_map)
+    # decoded = integer_arithmetic_decoding(output, prob_map, N)
+    # print(decoded)
+
+    test_code()
+
+    # test_arithmetic_encoding_decoding('AAAC')
