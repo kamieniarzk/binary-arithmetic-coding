@@ -129,6 +129,10 @@ def printB(binarty_int):
     print(print_num + ' (' + str(binarty_int) + ')')
 
 
+def join_int_list(int_list):
+    return ''.join(list(map(str, int_list)))
+
+
 def arithmetic_decoding(input, prob_mass, prob_table):
     symbols = []
     divider = 1
@@ -175,6 +179,7 @@ def get_oldest_bit(number):
 def integer_arithmetic_encoding(input_list):
     freq_map = calculate_freq_table(input_list)
     prob_map = calculate_prob_mass('AEKMRTYATY')
+    # prob_map = calculate_prob_mass(input_list)
     sum_of_all = np.sum(list(freq_map.values()))
     D = int('00000000', 2)
     G = int('11111111', 2)
@@ -207,14 +212,16 @@ def integer_arithmetic_encoding(input_list):
                 D = shift_left_16(D, 0)
                 G = shift_left_16(G, 1)
                 print(f'>>> OUT: {G_oldest_bit}')
+
+                for i in range(LN):
+                    out_list.append(1 - G_oldest_bit)
+                    print(f'>>> OUT from LN: {1 - G_oldest_bit}')
+
+                LN = 0
+
                 D_oldest_bit = get_oldest_bit(D)
                 G_oldest_bit = get_oldest_bit(G)
 
-            for i in range(LN):
-                out_list.append(1 - G_oldest_bit)
-                print(f'>>> OUT: {1 - G_oldest_bit}')
-
-            LN = 0
         else:
             D = (shift_left_16(D, 0) & int('01111111', 2)) | int(
                 f'{D_oldest_bit}0000000', 2)
@@ -230,7 +237,103 @@ def integer_arithmetic_encoding(input_list):
         printB(D)
         printB(G)
         printB(LN)
-    return out_list
+
+    seen_1 = False
+    ending = []
+    current_bit = 0
+    k = 0
+    while True:
+        if k > 8:
+            break
+        current_bit = get_oldest_bit(D)
+        if seen_1 and current_bit == 0:
+            break
+        seen_1 = current_bit == 1 or seen_1
+        ending.append(current_bit)
+        D = shift_left_16(D, 0)
+        k += 1
+
+    if seen_1:
+        out_list += ending
+
+    return out_list, prob_map
+
+
+def find_symbol_in_prob_map(value, prob_map):
+    for symbol in prob_map:
+        current_interval = prob_map[symbol]
+        if value > current_interval[0] and value < current_interval[1]:
+            return symbol
+
+    return 'ERROR'
+
+
+def integer_arithmetic_decoding(input_string, prob_map):
+    D = int('00000000', 2)
+    G = int('11111111', 2)
+    R = int('100000000', 2)
+    LS = 1
+    Kn = int(join_int_list(input_string[:8]), 2)
+    output = []
+    k = 0
+    input_string_counter = 8
+
+    while input_string_counter < len(input_string) and k < 10:
+        R = G - D + 1
+        current_value = Kn / R
+        current_symbol = find_symbol_in_prob_map(current_value, prob_map)
+        output.append(current_symbol)
+        print(
+            f'\n>>>> iteration: {k}, currValue={current_value},  input_counter={input_string_counter}, symbol={current_symbol}, Kn = {Kn}')
+        print('IN Kn=')
+        printB(Kn)
+
+        current_interval = prob_map[current_symbol]
+        ORG_D = D
+        D = (D + math.floor(R * current_interval[0]))
+        G = ORG_D + math.floor(R * current_interval[1]) - 1
+        print(current_interval)
+        print(R)
+        printB(D)
+        printB(G)
+        D_oldest_bit = get_oldest_bit(D)
+        G_oldest_bit = get_oldest_bit(G)
+
+        if D_oldest_bit == G_oldest_bit:
+            while D_oldest_bit == G_oldest_bit:
+                Kn = shift_left_16(Kn, int(input_string[input_string_counter]))
+                input_string_counter += 1
+                D = shift_left_16(D, 0)
+                G = shift_left_16(G, 1)
+                print(f'>>> OUT: {G_oldest_bit}')
+
+                # for i in range(LN):
+                #     output.append(1 - G_oldest_bit)
+                #     print(f'>>> OUT from LN: {1 - G_oldest_bit}')
+
+                LN = 0
+
+                D_oldest_bit = get_oldest_bit(D)
+                G_oldest_bit = get_oldest_bit(G)
+
+        else:
+            D = (shift_left_16(D, 0) & int('01111111', 2)) | int(
+                f'{D_oldest_bit}0000000', 2)
+            G = (shift_left_16(G, 1) & int('01111111', 2)) | int(
+                f'{G_oldest_bit}0000000', 2)
+            LN += 1
+            print('shifted D,G incremented LN')
+            printB(D)
+            printB(G)
+
+        k += 1
+        print('>> After iteration: (D, G, Kn):')
+        printB(D)
+        printB(G)
+        printB(R)
+        printB(Kn)
+
+    return output
 
 
 if __name__ == '__main__':
@@ -262,5 +365,7 @@ if __name__ == '__main__':
     # result, prob_table, prob_mass = arithmetic_coding(test_input)
     # print(result)
     # print(arithmetic_decoding(result, prob_mass, prob_table))
-    res = integer_arithmetic_encoding(test_input)
-    print(''.join(list(map(str, res))))
+    output, prob_map = integer_arithmetic_encoding(test_input)
+    print(''.join(list(map(str, output))))
+    decoded = integer_arithmetic_decoding(output, prob_map)
+    print(decoded)
