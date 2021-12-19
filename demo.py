@@ -5,6 +5,7 @@ from matplotlib import pyplot as plt
 from bitstring import BitArray
 import math
 import re
+from array import array
 
 
 def custom_print(input):
@@ -644,8 +645,12 @@ def read_file_bits(filename):
             byte_s = f.read(1)
             if not byte_s:
                 break
-            for bit in bin(int(byte_s.hex(), base=16))[2:]:
+            byte_int = bin(int(byte_s.hex(), base=16))[2:]
+            for i in range(8 - len(byte_int)):
+                out.append('0')
+            for bit in byte_int:
                 out.append(bit)
+        print(len(out))
         return out
 
 
@@ -702,15 +707,25 @@ if __name__ == '__main__':
             bit_counter += 1
             if bit_counter == 32:
                 print(string)
-                print(int(string, 2).to_bytes(4, 'big'))
                 f.write(int(string[::-1], 2).to_bytes(4, 'little'))
                 bit_counter = 0
                 string = ''
-        print(string)
-        print(int(string, 2).to_bytes(4, 'big'))
-        f.write(int(string, 2).to_bytes(4, 'big'))
-        bit_counter = 0
-        string = ''
+        # print(string)
+        # f.write(int(string, 2).to_bytes(4, 'big'))
+        # bit_counter = 0
+        # string = ''
         # test_code_file_output()
+
+    # bin_array = array("B")
+    # bits = ''.join(list(map(str, decoded)))
+
+    # # Align bits to 32, i.e. add "0" to tail
+    # bits = bits + "0" * (32 - len(bits))
+    # for index in range(0, 32, 8):
+    #     byte = bits[index:index + 8][::-1]
+    #     bin_array.append(int(byte, 2))
+
+    # with open("output.txt", "wb") as f:
+    #     f.write(bytes(bin_array))
 
         # test_arithmetic_encoding_decoding('1111000010101011101000011111')
