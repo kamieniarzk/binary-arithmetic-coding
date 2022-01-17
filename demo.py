@@ -1,4 +1,5 @@
 import numpy as np
+import itertools
 from PIL import Image
 from matplotlib import cm
 from matplotlib import pyplot as plt
@@ -615,7 +616,7 @@ def test_binary_arithmetic_encoding_decoding(input_string):
         messages.append('#### TEST FAILED ######################\n')
         messages.append(f'output: {decoded_string}\n')
         messages.append('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n')
-    return messages
+    return decoded_string, messages
 
 
 def test_code():
@@ -714,6 +715,26 @@ if __name__ == '__main__':
     # print(decoded)
 
     # test_code_file_output()
+    MIN_LENGTH = 2
+    MAX_LENGTH = 5
+    test_cases = []
 
-    test_binary_arithmetic_encoding_decoding(
-        '1001110001')
+    for length in range(MIN_LENGTH, MAX_LENGTH + 1):
+        new_cases = [''.join(item) for item in itertools.product('01', repeat=length)]
+        test_cases.extend(new_cases)
+
+    failed_cases = []
+
+    print(test_cases)
+    for case in test_cases:
+        print(type(case))
+        print(f'########## case: {case} ##########')
+        result, messages = test_binary_arithmetic_encoding_decoding(case)
+        if case != result:
+            failed_cases.append(case)
+
+    print(f'Succeed: {len(test_cases) - len(failed_cases)}')
+    print(f'Failed: {len(failed_cases)}')
+
+    print('Failed cases:')
+    print(failed_cases)
