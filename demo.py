@@ -35,7 +35,11 @@ def calculate_freq_table(input_list):
         freq_dict[element] = freq_dict[element] + \
             1 if element in freq_dict else 1
 
+    if '0' not in freq_dict:
+        freq_dict['0'] = 0
+
     return freq_dict
+
 
 def calculate_binary_freq_table(input_list):
     freq_dict = {}
@@ -44,7 +48,8 @@ def calculate_binary_freq_table(input_list):
             1 if element in freq_dict else 1
 
     if '0' not in freq_dict:
-        freq_dict['0'] = 0 
+        freq_dict['0'] = 0
+
     return freq_dict
 
 
@@ -334,6 +339,7 @@ def integer_arithmetic_encoding(input_list):
 
     return [out_list, prob_map, N]
 
+
 def find_symbol_in_prob_map(value, prob_map):
     print(f'FIND SYMBOL: {value}')
     print(f'PROB_MAP: {prob_map}')
@@ -406,6 +412,7 @@ def integer_arithmetic_decoding(input_string, prob_map, N):
 
     return output
 
+
 def binary_arithmetic_encoding(input_list):
     freq_map = calculate_binary_freq_table(input_list)
     prob_map = calculate_integer_prob_mass(input_list)
@@ -427,14 +434,13 @@ def binary_arithmetic_encoding(input_list):
 
     for element in input_list:
         print(f'\n>>>> iteration: {k}, Element: {element}')
-        current_interval = prob_map[element]
         R = G - D + 1
         R1 = math.floor(R * mult_factor)
         print(f'R1: {R1}')
         if element == 0 or element == '0':
             G = D + R1
         else:
-            D = D + R1 
+            D = D + R1
 
         D_oldest_bit = get_oldest_bit(D)
         G_oldest_bit = get_oldest_bit(G)
@@ -532,8 +538,8 @@ def binary_arithmetic_decoding(input_string, prob_map, N):
         current_value = ((Kn - D + 1) * N - 1) / R
 
         if Kn - D < R1:
-             output.append('0')
-             G = D + R1
+            output.append('0')
+            G = D + R1
         else:
             output.append('1')
             D = D + R1
@@ -589,6 +595,7 @@ def test_arithmetic_encoding_decoding(input_string):
         messages.append('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n')
     return messages
 
+
 def test_binary_arithmetic_encoding_decoding(input_string):
     messages = []
     messages.append('#######################################\n')
@@ -609,6 +616,7 @@ def test_binary_arithmetic_encoding_decoding(input_string):
         messages.append(f'output: {decoded_string}\n')
         messages.append('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n')
     return messages
+
 
 def test_code():
     test_strings = ['AB', 'ABC', 'AAC', 'AAAC', 'AAAAC', 'AACC', 'ACAC', 'AABC', 'ACA', '1234567890', '1234567890', 'ARYTMETYKA', '1111100000',
@@ -707,4 +715,5 @@ if __name__ == '__main__':
 
     # test_code_file_output()
 
-    test_binary_arithmetic_encoding_decoding('11110000101010111010000111110010100101')
+    test_binary_arithmetic_encoding_decoding(
+        '1001110001')
