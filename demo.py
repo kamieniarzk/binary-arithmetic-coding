@@ -37,6 +37,7 @@ def calculate_freq_table(input_list):
 
     return freq_dict
 
+
 def calculate_binary_freq_table(input_list):
     freq_dict = {}
     for element in input_list:
@@ -44,7 +45,7 @@ def calculate_binary_freq_table(input_list):
             1 if element in freq_dict else 1
 
     if '0' not in freq_dict:
-        freq_dict['0'] = 0 
+        freq_dict['0'] = 0
     return freq_dict
 
 
@@ -160,14 +161,14 @@ def arithmetic_coding(input_list):
 
 def printB(binarty_int, variable=''):
     print_num = bin(binarty_int)[2:]
-    while len(print_num) < 8:
+    while len(print_num) < 16:
         print_num = '0' + print_num
     print(variable + ': ' + print_num + ' (' + str(binarty_int) + ')')
 
 
 def getBinaryFromInt(curr_int):
     print_num = bin(curr_int)[2:]
-    while len(print_num) < 8:
+    while len(print_num) < 16:
         print_num = '0' + print_num
     return print_num
 
@@ -331,6 +332,7 @@ def integer_arithmetic_encoding(input_list):
 
     return [out_list, prob_map, N]
 
+
 def find_symbol_in_prob_map(value, prob_map):
     print(f'FIND SYMBOL: {value}')
     print(f'PROB_MAP: {prob_map}')
@@ -403,6 +405,7 @@ def integer_arithmetic_decoding(input_string, prob_map, N):
 
     return output
 
+
 def binary_arithmetic_encoding(input_list):
     freq_map = calculate_freq_table(input_list)
     prob_map = calculate_integer_prob_mass(input_list)
@@ -431,7 +434,7 @@ def binary_arithmetic_encoding(input_list):
         if element == 0 or element == '0':
             G = D + R1
         else:
-            D = D + R1 
+            D = D + R1
 
         D_oldest_bit = get_oldest_bit(D)
         G_oldest_bit = get_oldest_bit(G)
@@ -465,7 +468,6 @@ def binary_arithmetic_encoding(input_list):
             else:
                 break
 
-
         k += 1
         print('>> After iteration: (D, G, LN):')
         printB(D, 'D')
@@ -484,16 +486,23 @@ def binary_arithmetic_encoding(input_list):
     print('Out Output:')
     print(out_list)
 
-    while last_bit == 0 and k < 8:
+    while last_bit == 0 and k < 16:
         D = shift_right_16(D, 1)
         last_bit = D & int('0000000000000001', 2)
         k += 1
 
-    if k < 8:
-        for i in range(k, 8):
+    print('Cut D:')
+    printB(D, 'D')
+    print('k:')
+    print(k)
+
+    if k < 16:
+        for i in range(k, 16):
             last_bit = D & int('0000000000000001', 2)
             D = shift_right_16(D, 1)
             ending.insert(0, last_bit)
+            print('ending')
+            print(ending)
 
         out_list += ending
     else:
@@ -590,6 +599,7 @@ def test_arithmetic_encoding_decoding(input_string):
         messages.append('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n')
     return messages
 
+
 def test_binary_arithmetic_encoding_decoding(input_string):
     messages = []
     messages.append('#######################################\n')
@@ -610,6 +620,7 @@ def test_binary_arithmetic_encoding_decoding(input_string):
         messages.append(f'output: {decoded_string}\n')
         messages.append('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n')
     return messages
+
 
 def test_code():
     test_strings = ['AB', 'ABC', 'AAC', 'AAAC', 'AAAAC', 'AACC', 'ACAC', 'AABC', 'ACA', '1234567890', '1234567890', 'ARYTMETYKA', '1111100000',
@@ -708,4 +719,4 @@ if __name__ == '__main__':
 
     # test_code_file_output()
 
-    test_binary_arithmetic_encoding_decoding('10101001010010')
+    test_binary_arithmetic_encoding_decoding('011110')
