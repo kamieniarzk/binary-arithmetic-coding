@@ -449,32 +449,23 @@ def binary_arithmetic_encoding(input_list):
         while True:
             if D_oldest_bit == G_oldest_bit:
                 out_list.append(G_oldest_bit)
-                D = shift_left_16(D, 0)
-                G = shift_left_16(G, 1)
-                print(f'>>> OUT: {G_oldest_bit}')
 
-                for i in range(LN):
+                while LN > 0:
                     out_list.append(1 - G_oldest_bit)
-                    print(f'>>> OUT from LN: {1 - G_oldest_bit}')
+                    LN -= 1
 
-                LN = 0
-
-                D_oldest_bit = get_oldest_bit(D)
-                G_oldest_bit = get_oldest_bit(G)
-
-        # else:
-            elif (D & int('11000000', 2) == int('01000000')) and (G & int('11000000', 2) == int('10000000')):
-                D = (shift_left_16(D, 0) & int('01111111', 2)) | int(
-                    f'{D_oldest_bit}0000000', 2)
-                G = (shift_left_16(G, 1) & int('01111111', 2)) | int(
-                    f'{G_oldest_bit}0000000', 2)
+            elif (D & int('01000000', 2))  and not (G & int('01000000', 2)):
                 LN += 1
-                print('shifted D,G incremented LN')
-                printB(D, 'D')
-                printB(G, 'G')
+                D &= int('00111111', 2)
+                G |= int('01000000', 2)
+            else: 
+                break 
+            
+            D = shift_left_16(D, 0)
+            G = shift_left_16(G, 1)
 
-            else:
-                break
+            D_oldest_bit = get_oldest_bit(D)
+            G_oldest_bit = get_oldest_bit(G)
 
         k += 1
         print('>> After iteration: (D, G, LN):')
@@ -482,17 +473,10 @@ def binary_arithmetic_encoding(input_list):
         printB(G, 'G')
         # printB(LN)
 
-    seen_1 = False
     ending = []
-    current_bit = 0
     k = 0
 
-    print('Out D:')
-    printB(D, 'D')
     last_bit = D & int('00000001', 2)
-
-    print('Out Output:')
-    print(out_list)
 
     while last_bit == 0 and k < 8:
         D = shift_right_16(D, 1)
@@ -528,6 +512,7 @@ def binary_arithmetic_decoding(input_string, prob_map, N):
     R = int('100000000', 2)
 
     mult_factor = prob_map['0'][1] / N
+    print(f'mult factor is {mult_factor}')
     LS = 1
     Kn = int(join_int_list(input_string[:8]), 2)
     output = []
@@ -536,7 +521,6 @@ def binary_arithmetic_decoding(input_string, prob_map, N):
     while k < N:
         R = G - D + 1
         R1 = math.floor(R * mult_factor)
-        current_value = ((Kn - D + 1) * N - 1) / R
 
         if Kn - D < R1:
             output.append('0')
@@ -550,22 +534,29 @@ def binary_arithmetic_decoding(input_string, prob_map, N):
         printB(G, 'G')
         D_oldest_bit = get_oldest_bit(D)
         G_oldest_bit = get_oldest_bit(G)
-
-        while D_oldest_bit == G_oldest_bit:
-            Kn = shift_left_16(Kn, int(
-                input_string[input_string_counter] if input_string_counter < len(input_string) else 0))
-            input_string_counter += 1
+        print(D_oldest_bit)
+        print(G_oldest_bit)
+        while True:
+            if D_oldest_bit == G_oldest_bit:
+                pass
+            elif (D & int('01000000', 2) == int('01000000', 2) and (G & int('01000000', 2) == 0)):
+                Kn ^= int('01000000', 2)
+                D &= int('00111111', 2)
+                G |= int('01000000', 2)
+            else:
+                break
             D = shift_left_16(D, 0)
             G = shift_left_16(G, 1)
-            print(f'>>> OUT: {G_oldest_bit}')
-
             D_oldest_bit = get_oldest_bit(D)
             G_oldest_bit = get_oldest_bit(G)
+            print(f'>>> OUT: {G_oldest_bit}')
+            Kn = shift_left_16(Kn, int(input_string[input_string_counter] if input_string_counter < len(input_string) else 0))
+            input_string_counter += 1
 
         k += 1
         print('>> After iteration: (D, G, R, Kn):')
-        printB(D, 'D')
         printB(G, 'G')
+        printB(D, 'D')
         printB(R)
         printB(Kn, 'Kn')
 
@@ -716,7 +707,7 @@ if __name__ == '__main__':
 
     # test_code_file_output()
     MIN_LENGTH = 2
-    MAX_LENGTH = 5
+    MAX_LENGTH = 6
     test_cases = []
 
     for length in range(MIN_LENGTH, MAX_LENGTH + 1):
@@ -732,6 +723,7 @@ if __name__ == '__main__':
         result, messages = test_binary_arithmetic_encoding_decoding(case)
         if case != result:
             failed_cases.append(case)
+            print(f'case: {case} result: {result}')
 
     print(f'Succeed: {len(test_cases) - len(failed_cases)}')
     print(f'Failed: {len(failed_cases)}')
