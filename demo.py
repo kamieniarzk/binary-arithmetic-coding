@@ -7,8 +7,12 @@ import math
 import re
 from array import array
 
+FILES_DIR = 'files'
+TEST_IMG = 'barbara.pgm'
+
 
 def custom_print(input):
+    """Custom function for enabling and disabling console logs"""
     return
     custom_print(input)
 
@@ -45,38 +49,6 @@ def calculate_freq_table(input_list):
     return freq_dict
 
 
-def calculate_prob_table_from_freq(freq_map):
-    '''@depracated'''
-    sum_of_all = np.sum(list(freq_map.values()))
-    prob_map = {}
-    for key in freq_map:
-        prob_map[key] = freq_map[key] / sum_of_all
-    return prob_map
-
-
-def calculate_prob_table(input_list):
-    '''@depracated'''
-    freq_table = calculate_freq_table(input_list)
-    return calculate_prob_table_from_freq(freq_table)
-
-
-def calculate_prob_mass_from_prob_table(prob_map):
-    '''@depracated'''
-    prev_el = 0
-    prob_mass_map = {}
-    for key in prob_map:
-        upper_bound = prob_map[key] + prev_el
-        prob_mass_map[key] = [prev_el, upper_bound]
-        prev_el = upper_bound
-    return prob_mass_map
-
-
-def calculate_prob_mass(input_list):
-    '''@depracated'''
-    table = calculate_prob_table(input_list)
-    return calculate_prob_mass_from_prob_table(table)
-
-
 def calculate_integer_prob_mass_from_freq_table(freq_table):
     prob_map = {}
     prev_freq = 0
@@ -98,63 +70,6 @@ def calculate_sum_of_all(input_list):
     return np.sum(list(freq_table.values()))
 
 
-def arithmetic_coding(input_list):
-    # prob_mass = calculate_prob_mass(input_list)
-    # prob_table = calculate_prob_table(input_list)
-    prob_mass = calculate_prob_mass('AEKMRTYATY')
-    prob_table = calculate_prob_table('AEKMRTYATY')
-
-    passed_elements = []
-
-    current_lower_bound = prob_mass[input_list[0]][0]
-    current_upper_bound = prob_mass[input_list[0]][1]
-    # currant_radius = current_upper_bound - current_lower_bound
-
-    i = 0
-    for element in input_list:
-        if i == 0:
-            i += 1
-            continue
-        custom_print(f'===> ITERATION {i}')
-        custom_print(
-            f'in bounds: lower - {current_lower_bound} | upper - {current_upper_bound}')
-        element_lower_bound = prob_mass[element][0]
-        element_upper_bound = prob_mass[element][1]
-        custom_print(
-            f'element bounds: lower - {element_lower_bound} | upper - {element_upper_bound}')
-
-        height = current_upper_bound - current_lower_bound
-        current_lower_bound = current_lower_bound + \
-            (current_upper_bound - current_lower_bound) * element_lower_bound
-        current_upper_bound = current_lower_bound + \
-            (height * (element_upper_bound - element_lower_bound))
-        # currant_radius = current_upper_bound - current_lower_bound
-
-        i += 1
-        custom_print(
-            f'out bounds: lower - {current_lower_bound} | upper - {current_upper_bound}')
-
-    # custom_print(f'===> iteration {i}')
-    # custom_print(f'in bound: {current_bound}')
-    # element_bounds = prob_mass[element][0]
-    # current_offset = 1
-    #  passed_elements.append(element)
-    #   custom_print(passed_elements)
-
-    #    for passed_element in passed_elements:
-    #         current_offset *= prob_mass[passed_element][0]
-    #         custom_print(f'offset-multiply: {prob_table[passed_element]}')
-    #     if len(passed_elements) > 1:
-    #         current_bound += current_offset
-    #     custom_print(f'out bound: {current_bound}')
-    #     custom_print(current_offset)
-    #     i += 1
-
-    # custom_print('prob mass table')
-    # custom_print(prob_mass)
-    return [current_lower_bound, prob_table, prob_mass]
-
-
 def printB(binarty_int, variable=''):
     print_num = bin(binarty_int)[2:]
     while len(print_num) < 8:
@@ -173,40 +88,13 @@ def join_int_list(int_list):
     return ''.join(list(map(str, int_list)))
 
 
-def arithmetic_decoding(input, prob_mass, prob_table):
-    symbols = []
-    divider = 1
-    lower_bound = 0
-    i = 0
-    while input > 0:
-        current_key = ''
-        for key in prob_mass:
-            bounds = prob_mass[key]
-            custom_print(f'curr check: {input} {bounds[0]} {bounds[1]}')
-            if input > bounds[0] and input < bounds[1]:
-                current_key = key
-                lower_bound = bounds[0]
-        symbols.append(current_key)
-        custom_print(f'result: {input} {prob_table[current_key]}')
-        if input < 0.0001:
-            input = 0
-        else:
-            input = (input - lower_bound) / prob_table[current_key]
-
-        i += 1
-        if i > 10:
-            input = 0
-
-    return symbols
-
-
-def shift_left_16(number, fill_bit):
+def shift_left_and_fill(number, fill_bit):
     shifted = (number << 1) & int(f'0000000011111111', 2)
     printB(shifted, 'shifted')
     return shifted | int(f'0000000{fill_bit}', 2)
 
 
-def shift_right_16(number, shift_number):
+def shift_right(number, shift_number):
     return (number >> shift_number) & int('0000000011111111', 2)
 
 
@@ -217,8 +105,8 @@ def get_oldest_bit(number):
 
 def integer_arithmetic_encoding(input_list):
     freq_map = calculate_freq_table(input_list)
-    # prob_map = calculate_prob_mass('AEKMRTYATY')
     prob_map = calculate_integer_prob_mass(input_list)
+
     N = calculate_sum_of_all(input_list)
     D = int('00000000', 2)
     G = int('11111111', 2)
@@ -227,34 +115,24 @@ def integer_arithmetic_encoding(input_list):
     prev_element = input_list[0]
     out_list = []
 
-    custom_print('Starting integer encoding...')
-    printB(D, 'D')
-    printB(G, 'G')
-
     for element in input_list:
-        custom_print(f'\n>>>> iteration: {k}, Element: {element}')
         current_interval = prob_map[element]
         R = G - D + 1
         ORG_D = D
         D = (D + math.floor(R * current_interval[0] / N))
         G = ORG_D + math.floor(R * current_interval[1] / N) - 1
-        custom_print(current_interval)
-        custom_print(R)
-        printB(D, 'D')
-        printB(G, 'G')
+
         D_oldest_bit = get_oldest_bit(D)
         G_oldest_bit = get_oldest_bit(G)
 
         while True:
             if D_oldest_bit == G_oldest_bit:
                 out_list.append(G_oldest_bit)
-                D = shift_left_16(D, 0)
-                G = shift_left_16(G, 1)
-                custom_print(f'>>> OUT: {G_oldest_bit}')
+                D = shift_left_and_fill(D, 0)
+                G = shift_left_and_fill(G, 1)
 
                 for i in range(LN):
                     out_list.append(1 - G_oldest_bit)
-                    custom_print(f'>>> OUT from LN: {1 - G_oldest_bit}')
 
                 LN = 0
 
@@ -263,161 +141,38 @@ def integer_arithmetic_encoding(input_list):
 
         # else:
             elif (D & int('11000000', 2) == int('01000000')) and (G & int('11000000', 2) == int('10000000')):
-                D = (shift_left_16(D, 0) & int('01111111', 2)) | int(
+                D = (shift_left_and_fill(D, 0) & int('01111111', 2)) | int(
                     f'{D_oldest_bit}0000000', 2)
-                G = (shift_left_16(G, 1) & int('01111111', 2)) | int(
+                G = (shift_left_and_fill(G, 1) & int('01111111', 2)) | int(
                     f'{G_oldest_bit}0000000', 2)
                 LN += 1
-                custom_print('shifted D,G incremented LN')
-                printB(D, 'D')
-                printB(G, 'G')
 
             else:
                 break
 
-        # if not D_oldest_bit == G_oldest_bit:
-        #     while (D & int('11000000', 2) == int('01000000', 2)) and (G & int('11000000', 2) == int('10000000', 2)):
-        #         D = (shift_left_16(D, 0) & int('01111111', 2)) | int(
-        #             f'{D_oldest_bit}0000000', 2)
-        #         G = (shift_left_16(G, 1) & int('01111111', 2)) | int(
-        #             f'{G_oldest_bit}0000000', 2)
-        #         LN += 1
-        #         custom_print('shifted D,G incremented LN')
-        #         printB(D, 'D')
-        #         printB(G, 'G')
-
         k += 1
-        custom_print('>> After iteration: (D, G, LN):')
-        printB(D, 'D')
-        printB(G, 'G')
-        printB(LN)
 
     seen_1 = False
     ending = []
     current_bit = 0
     k = 0
 
-    custom_print('Out D:')
-    printB(D, 'D')
     last_bit = D & int('00000001', 2)
 
-    custom_print('Out Output:')
-    custom_print(out_list)
-
     while last_bit == 0 and k < 8:
-        D = shift_right_16(D, 1)
+        D = shift_right(D, 1)
         last_bit = D & int('00000001', 2)
         k += 1
 
     if k < 8:
         for i in range(k, 8):
             last_bit = D & int('00000001', 2)
-            D = shift_right_16(D, 1)
+            D = shift_right(D, 1)
             ending.insert(0, last_bit)
 
         out_list += ending
     else:
         out_list += [0, 0, 0, 0, 0, 0, 0, 0]
-
-    custom_print('Out Ending:')
-    custom_print(ending)
-
-    # while len(out_list) < 8:
-    #     # out_list.append(0)
-    #     out_list.insert(0, last_bit)
-
-    custom_print('>> Encoding finished, output:')
-    custom_print(''.join(list(map(str, out_list))))
-
-    return [out_list, prob_map, N]
-
-
-def binary_integer_arithmetic_encoding(input_list):
-    freq_map = calculate_freq_table(input_list)
-    # prob_map = calculate_prob_mass('AEKMRTYATY')
-    prob_map = calculate_integer_prob_mass(input_list)
-    N = calculate_sum_of_all(input_list)
-    D = int('00000000', 2)
-    G = int('11111111', 2)
-    LN = 0
-    k = 0
-    prev_element = input_list[0]
-    out_list = []
-
-    custom_print('Starting integer encoding...')
-    printB(D, 'D')
-    printB(G, 'G')
-
-    for element in input_list:
-        custom_print(f'\n>>>> iteration: {k}, Element: {element}')
-        R = G - D + 1
-        # R1 = R * prob_map[1][0] / N
-        # if element == 1:
-        #     # do sth
-        # else:
-
-        current_interval = prob_map[element]
-        ORG_D = D
-        D = (D + math.floor(R * current_interval[0] / N))
-        G = ORG_D + math.floor(R * current_interval[1] / N) - 1
-        custom_print(current_interval)
-        custom_print(R)
-        printB(D, 'D')
-        printB(G, 'G')
-        D_oldest_bit = get_oldest_bit(D)
-        G_oldest_bit = get_oldest_bit(G)
-
-        while D_oldest_bit == G_oldest_bit:
-            out_list.append(G_oldest_bit)
-            D = shift_left_16(D, 0)
-            G = shift_left_16(G, 1)
-            custom_print(f'>>> OUT: {G_oldest_bit}')
-
-            for i in range(LN):
-                out_list.append(1 - G_oldest_bit)
-                custom_print(f'>>> OUT from LN: {1 - G_oldest_bit}')
-
-            LN = 0
-
-            D_oldest_bit = get_oldest_bit(D)
-            G_oldest_bit = get_oldest_bit(G)
-
-        k += 1
-        custom_print('>> After iteration: (D, G, LN):')
-        printB(D, 'D')
-        printB(G, 'G')
-        printB(LN)
-
-    ending = []
-    current_bit = 0
-    k = 0
-
-    custom_print('Out D:')
-    printB(D, 'D')
-    last_bit = D & int('00000001', 2)
-
-    custom_print('Out Output:')
-    custom_print(out_list)
-
-    while last_bit == 0 and k < 8:
-        D = shift_right_16(D, 1)
-        last_bit = D & int('00000001', 2)
-        k += 1
-
-    if k < 8:
-        for i in range(k, 8):
-            last_bit = D & int('00000001', 2)
-            D = shift_right_16(D, 1)
-            ending.insert(0, last_bit)
-
-        out_list += ending
-
-    custom_print('Out Ending:')
-    custom_print(ending)
-
-    # while len(out_list) < 8:
-    #     # out_list.append(0)
-    #     out_list.insert(0, last_bit)
 
     custom_print('>> Encoding finished, output:')
     custom_print(''.join(list(map(str, out_list))))
@@ -441,10 +196,6 @@ def integer_arithmetic_decoding(input_string, prob_map, N):
     G = int('11111111', 2)
     R = int('100000000', 2)
     LS = 1
-    # int_prob_map = {}
-    # for key in prob_map:
-    #     interval = prob_map[key]
-    #     int_prob_map[key] = ([interval[0] * N, interval[1] * N])
 
     Kn = int(join_int_list(input_string[:8]), 2)
     output = []
@@ -456,117 +207,27 @@ def integer_arithmetic_decoding(input_string, prob_map, N):
         current_value = ((Kn - D + 1) * N - 1) / R
         current_symbol = find_symbol_in_prob_map(current_value, prob_map)
         output.append(current_symbol)
-        custom_print(
-            f'\n>>>> iteration: {k}, current_value={current_value}  input_counter={input_string_counter}, symbol={current_symbol}, Kn = {Kn}')
-        custom_print('IN Kn=')
-        printB(Kn, 'Kn')
 
-        custom_print(f'current symbol: {current_symbol}')
-        custom_print(f'prob map: {prob_map}')
         current_interval = prob_map[current_symbol]
         ORG_D = D
         D = (D + math.floor(R * current_interval[0] / N))
         G = ORG_D + math.floor(R * current_interval[1] / N) - 1
-        custom_print(current_interval)
-        custom_print(R)
-        printB(D, 'D')
-        printB(G, 'G')
+
         D_oldest_bit = get_oldest_bit(D)
         G_oldest_bit = get_oldest_bit(G)
 
         while D_oldest_bit == G_oldest_bit:
-            Kn = shift_left_16(Kn, int(
+            Kn = shift_left_and_fill(Kn, int(
                 input_string[input_string_counter] if input_string_counter < len(input_string) else 0))
             input_string_counter += 1
-            D = shift_left_16(D, 0)
-            G = shift_left_16(G, 1)
+            D = shift_left_and_fill(D, 0)
+            G = shift_left_and_fill(G, 1)
             custom_print(f'>>> OUT: {G_oldest_bit}')
 
             D_oldest_bit = get_oldest_bit(D)
             G_oldest_bit = get_oldest_bit(G)
 
         k += 1
-        custom_print('>> After iteration: (D, G, R, Kn):')
-        printB(D, 'D')
-        printB(G, 'G')
-        printB(R)
-        printB(Kn, 'Kn')
-
-    custom_print('>> Decoding finished, output:')
-    custom_print(''.join(list(map(str, output))))
-
-    return output
-
-
-def binary_integer_arithmetic_decoding(input_string, prob_map, N):
-    D = int('00000000', 2)
-    G = int('11111111', 2)
-    R = int('100000000', 2)
-    LS = 1
-    # int_prob_map = {}
-    # for key in prob_map:
-    #     interval = prob_map[key]
-    #     int_prob_map[key] = ([interval[0] * N, interval[1] * N])
-
-    Kn = int(join_int_list(input_string[:8]), 2)
-    output = []
-    k = 0
-    input_string_counter = 8
-    LN = 0
-    while k < N:
-        R = G - D + 1
-        current_value = ((Kn - D + 1) * N - 1) / R
-        current_symbol = find_symbol_in_prob_map(current_value, prob_map)
-        output.append(current_symbol)
-        custom_print(
-            f'\n>>>> iteration: {k}, current_value={current_value}  input_counter={input_string_counter}, symbol={current_symbol}, Kn = {Kn}')
-        custom_print('IN Kn=')
-        printB(Kn, 'Kn')
-
-        custom_print(f'current symbol: {current_symbol}')
-        custom_print(f'prob map: {prob_map}')
-        current_interval = prob_map[current_symbol]
-        ORG_D = D
-        D = (D + math.floor(R * current_interval[0] / N))
-        G = ORG_D + math.floor(R * current_interval[1] / N) - 1
-        custom_print(current_interval)
-        custom_print(R)
-        printB(D, 'D')
-        printB(G, 'G')
-        D_oldest_bit = get_oldest_bit(D)
-        G_oldest_bit = get_oldest_bit(G)
-
-        while D_oldest_bit == G_oldest_bit:
-            Kn = shift_left_16(Kn, int(
-                input_string[input_string_counter] if input_string_counter < len(input_string) else 0))
-            input_string_counter += 1
-            D = shift_left_16(D, 0)
-            G = shift_left_16(G, 1)
-            custom_print(f'>>> OUT: {G_oldest_bit}')
-
-            for i in range(LN):
-                Kn = shift_left_16(Kn, int(
-                    input_string[input_string_counter] if input_string_counter < len(input_string) else 0))
-
-            D_oldest_bit = get_oldest_bit(D)
-            G_oldest_bit = get_oldest_bit(G)
-
-        if not D_oldest_bit == G_oldest_bit:
-            while (D & int('11000000', 2) == int('01000000', 2)) and (G & int('11000000', 2) == int('10000000', 2)):
-                D = (shift_left_16(D, 0) & int('01111111', 2)) | int(
-                    f'{D_oldest_bit}0000000', 2)
-                G = (shift_left_16(G, 1) & int('01111111', 2)) | int(
-                    f'{G_oldest_bit}0000000', 2)
-                custom_print('shifted D,G incremented LN')
-                printB(D, 'D')
-                printB(G, 'G')
-
-        k += 1
-        custom_print('>> After iteration: (D, G, R, Kn):')
-        printB(D, 'D')
-        printB(G, 'G')
-        printB(R)
-        printB(Kn, 'Kn')
 
     custom_print('>> Decoding finished, output:')
     custom_print(''.join(list(map(str, output))))
@@ -610,8 +271,6 @@ def test_code():
 
     for message in messages:
         custom_print(message)
-
-    # test_arithmetic_encoding_decoding('AAC')
 
 
 def test_code_file_output():
@@ -667,73 +326,16 @@ def write_bits_to_file(input_bits, output_filename='output.txt'):
                 bit_counter = 0
                 string = ''
 
-        # while bit_counter > 0 and bit_counter < 32:
-        #     string += '0'
-        #     bit_counter += 1
-
-        # f.write(int(string, 2).to_bytes(4, 'big'))
-
 
 if __name__ == '__main__':
-    # f = open('boat.pgm', 'rb')
-    # pgm = np.array(read_pgm(f))
-    # pgm = pgm/255
-    # custom_print(np.amax(pgm))
-    # im = Image.fromarray(np.uint8(cm.gist_gray(pgm)*255))
-    # # im.show()
-    # hist, bin_edges = np.histogram(im, bins=range(0, 257))
-    # custom_print(hist)
-    # # plot = plt.plot(np.arange(0, 256), hist)
-    # frequency_table = {key: value for key,
-    #                    value in zip(bin_edges[0:256], hist)}
-    # custom_print(frequency_table)
-    # # plt.plot(np.arange(0, 256), frequency_table)
-    # sum_of_all = np.sum(list(frequency_table.values()))
-    # frequency_list = list(frequency_table.values())
-    # custom_print('SUM')
-    # probability_list = frequency_list/sum_of_all
-    # probability_mass = []
-    # mass_sum = 0
-    # for probability in probability_list:
-    #     probability_mass.append(probability + mass_sum)
-    #     mass_sum += probability
-    # flat_pgm = flat_arr(pgm)
-
-    # test_input = list('1234567890')
-    # result, prob_table, prob_mass = arithmetic_coding(test_input)
-    # custom_print(result)
-    # custom_print(arithmetic_decoding(result, prob_mass, prob_table))
-    # output, prob_map, N = integer_arithmetic_encoding(test_input)
-    # custom_print(prob_map)
-    # decoded = integer_arithmetic_decoding(output, prob_map, N)
-    # custom_print(decoded)
-
-    input = read_file_bits('lena.pgm')
-    # print(input)
+    input = read_file_bits(f'{FILES_DIR}/{TEST_IMG}')
 
     output, prob_map, N = integer_arithmetic_encoding(input)
     custom_print(prob_map)
-    # print(output)
-    write_bits_to_file(map(str, output), 'compressed.txt')
+
+    write_bits_to_file(map(str, output), f'{FILES_DIR}/compressed.txt')
 
     decoded = integer_arithmetic_decoding(output, prob_map, N)
     custom_print(decoded)
-    # print(decoded)
 
-    write_bits_to_file(decoded, 'image.pgm')
-    output_file = read_file_bits('output.txt')
-    # print(output_file)
-
-    # bin_array = array("B")
-    # bits = ''.join(list(map(str, decoded)))
-
-    # # Align bits to 32, i.e. add "0" to tail
-    # bits = bits + "0" * (32 - len(bits))
-    # for index in range(0, 32, 8):
-    #     byte = bits[index:index + 8][::-1]
-    #     bin_array.append(int(byte, 2))
-
-    # with open("output.txt", "wb") as f:
-    #     f.write(bytes(bin_array))
-
-    # test_arithmetic_encoding_decoding('1111000010101011101000011111')
+    write_bits_to_file(decoded, f'{FILES_DIR}/decompressed_image.pgm')
