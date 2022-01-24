@@ -35,22 +35,18 @@ def shift_left_and_fill(number, fill_bit):
 
 
 def binary_arithmetic_encoding(input_list):
-    POL = 1 << 7
-    CWIERC = 1 << 6
-
+    
     c1, c2 = calculate_binary_symbol_frequency(input_list)
-    N = c1 + c2
     D = int('00000000', 2)
-    G = int('11111111', 2)
+    R = int('100000000', 2)
     LN = 0
     k = 0
     out_list = []
     mult_factor = c1 / (c1 + c2)
 
     k = 0
-
     for element in input_list:
-        R = G - D + 1
+      
         R1 = math.floor(R * mult_factor)
         R2 = R - R1
 
@@ -60,28 +56,11 @@ def binary_arithmetic_encoding(input_list):
         else:
             R = R2
 
-        while R <= CWIERC:
-            if D >= POL:
-                out_list.append(1)
-                while LN > 0:
-                    out_list.append(0)
-                    LN -= 1
-                D -= POL
-            elif D + R <= POL:
-                out_list.append(0)
-                while LN > 0:
-                    out_list.append(1)
-                    LN -= 1
-            else:
-                LN += 1
-                D -= CWIERC
-            D <<= 1
-            R <<= 1
-
+        normalizuj_kod(D, R, LN, out_list)
+    
     k = 0
     ending = []
     last_bit = D & int('00000001', 2)
-
 
     ## jeśli zakodowany ciąg ma długość mniej niz 8 - doklejamy znaczące bity z D albo zera 
     while last_bit == 0 and k < 8:
@@ -107,12 +86,10 @@ def binary_arithmetic_encoding(input_list):
 
     return [out_list, c1, c2]
 
-
 def binary_arithmetic_decoding(input_string, c1, c2):
     POL = 1 << 7
     CWIERC = 1 << 6
     D = int('00000000', 2)
-    G = int('11111111', 2)
     R = int('100000000', 2)
 
     mult_factor = c1 / (c1 + c2)
@@ -127,7 +104,6 @@ def binary_arithmetic_decoding(input_string, c1, c2):
     k = 0
     input_string_counter = kn_initial_len
     while k < N:
-        R = G - D + 1
         R1 = math.floor(R * mult_factor)
         R2 = R - R1
 
@@ -139,34 +115,59 @@ def binary_arithmetic_decoding(input_string, c1, c2):
             R = R2
             output.append('1')
 
-        while R <= CWIERC:
-            if D + R <= POL:
-                pass
-            elif D >= POL:
-                D -= POL
-                Kn -= POL
-            else:
-                D -= CWIERC
-                Kn -= CWIERC
-            D <<= 1
-            R <<= 1
-            Kn <<= 1
-            Kn = shift_left_and_fill(Kn, int(
-                input_string[input_string_counter] if input_string_counter < len(input_string) else 0))
-            input_string_counter += 1
+        normalizuj_dek(input_string, D, R, Kn, input_string_counter)
         k += 1
         
     return output
 
+def normalizuj_dek(input_string, D, R, Kn, input_string_counter):
+    POL = 1 << 7                  
+    CWIERC = 1 << 6
+
+    while R <= CWIERC:
+        if D + R <= POL: 
+            pass
+        elif D >= POL:
+            D -= POL 
+            Kn -= POL 
+        else: 
+            D -= CWIERC 
+            Kn -= CWIERC 
+        D <<= 1
+        R <<= 1
+        Kn <<= 1
+        Kn = shift_left_and_fill(Kn, int(input_string[input_string_counter] if input_string_counter < len(input_string) else 0))
+        input_string_counter += 1
+
+def normalizuj_kod(D, R, LN, out_list):
+    POL = 1 << 7                  
+    CWIERC = 1 << 6
+
+    while R <= CWIERC:
+        if D >= POL:
+            out_list.append(1)
+            while LN > 0:
+                out_list.append(0)
+                LN -= 1
+            D -= POL
+        elif D + R <= POL:
+            out_list.append(0)
+            while LN > 0:
+                out_list.append(1)
+                LN -= 1
+        else:
+            LN += 1
+            D -= CWIERC 
+        D <<= 1
+        R <<= 1
 
 def test_binary_arithmetic_encoding_decoding(input_string):
     messages = []
     messages.append('#######################################\n')
     messages.append(f'#### TESTING INPUT: {input_string}\n')
     messages.append('#######################################\n')
-    output, prob_map, N = binary_arithmetic_encoding(input_string)
-    print(prob_map)
-    decoded = binary_arithmetic_decoding(output, prob_map, N)
+    output, c1, c2 = binary_arithmetic_encoding(input_string)
+    decoded = binary_arithmetic_decoding(output, c1, c2)
     decoded_string = ''.join(list(map(str, decoded)))
     is_success = decoded_string == input_string
     if is_success:
