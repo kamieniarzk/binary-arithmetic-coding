@@ -41,17 +41,12 @@ def binary_arithmetic_encoding(input_list):
     k = 0
     out_list = []
     mult_factor = c1 / (c1 + c2)
-    print('Starting integer encoding...')
-    printB(G, 'G')
-    printB(D, 'D')
 
     k = 0
     
     for element in input_list:
-        print(f'\n>>>> iteration: {k}, Element: {element}')
         R = G - D + 1
         R1 = math.floor(R * mult_factor)
-        print(f'mult factor is {mult_factor}')
         R2 = R - R1
 
         if element == '0':
@@ -81,6 +76,9 @@ def binary_arithmetic_encoding(input_list):
     k = 0
     ending = []
     last_bit = D & int('00000001', 2)
+
+
+    ## jeśli zakodowany ciąg ma długość mniej niz 8 - doklejamy znaczące bity z D albo zera 
     while last_bit == 0 and k < 8:
         D >>= 1
         last_bit = D & int('00000001', 2)
@@ -101,15 +99,6 @@ def binary_arithmetic_encoding(input_list):
             zeros_array.append(0)
             i += 1
         out_list += zeros_array
-        print(zeros_array)
-
-    print(f'ending: {ending}')
-    print('After encoding')
-    printB(G, 'G')
-    printB(D, 'D')
-
-    print('>> Encoding finished, output:')
-    print(''.join(list(map(str, out_list))))
 
     return [out_list, c1, c2]
 
@@ -160,15 +149,7 @@ def binary_arithmetic_decoding(input_string, c1, c2):
             Kn = shift_left_and_fill(Kn, int(input_string[input_string_counter] if input_string_counter < len(input_string) else 0))
             input_string_counter += 1
         k += 1
-        print('>> After iteration: (D, G, R, Kn):')
-        printB(G, 'G')
-        printB(D, 'D')
-        printB(R)
-        printB(Kn, 'Kn')
-
-    print('>> Decoding finished, output:')
-    print(''.join(list(map(str, output))))
-
+        
     return output
 
 def test_binary_arithmetic_encoding_decoding(input_string):
