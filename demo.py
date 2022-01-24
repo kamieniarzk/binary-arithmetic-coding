@@ -36,10 +36,6 @@ def read_pgm(pgmf):
     return raster
 
 
-def flat_arr(t):
-    return [item for sublist in t for item in sublist]
-
-
 def calculate_freq_table(input_list):
     freq_dict = {}
     for element in input_list:
@@ -139,7 +135,6 @@ def integer_arithmetic_encoding(input_list):
                 D_oldest_bit = get_oldest_bit(D)
                 G_oldest_bit = get_oldest_bit(G)
 
-        # else:
             elif (D & int('11000000', 2) == int('01000000')) and (G & int('11000000', 2) == int('10000000')):
                 D = (shift_left_and_fill(D, 0) & int('01111111', 2)) | int(
                     f'{D_oldest_bit}0000000', 2)
@@ -257,7 +252,7 @@ def test_arithmetic_encoding_decoding(input_string):
     return messages
 
 
-def test_code():
+def test_short_strings():
     test_strings = ['AB', 'ABC', 'AAC', 'AAAC', 'AAAAC', 'AACC', 'ACAC', 'AABC', 'ACA', '1234567890', '1234567890', 'ARYTMETYKA', '1111100000',
                     '1234554321', '0000055555', ';lasdjvkop3r92orufe90fuoasdjfvkvnawopsidf0933']
 
@@ -273,7 +268,7 @@ def test_code():
         custom_print(message)
 
 
-def test_code_file_output():
+def test_binary_strings():
     string1 = '1111111110000010111111101011111100101111011101110101101010101'
     string2 = '111111111000001011111110101111110010111101110111010110101010101010111111110'
     string3 = '10101010111010101010111100000101011010110101010101010101010101010101010111111111111000001011111110101111110010111101110111010110101010101010111111110'
@@ -283,8 +278,6 @@ def test_code_file_output():
     test_strings = ['AB', 'ABC', 'AAC', 'AAAC', 'AAAAC', 'AACC', 'ACAC', 'AABC', 'ACA', '1234567890', '1234567890', 'ARYTMETYKA', '1111100000',
                     '1234554321', '0000055555', ';lasdjvkop3r92orufe90fuoasdjfvkvnawopsidf0933', string1, string2, string3, string4, string5]
     with open('./logs.txt', 'w') as log_file:
-        # for i in range(1024 * 1024, 1024 * 1024 + 1000):
-        #     test_strings.append(getBinaryFromInt(i))
 
         messages = []
         for test_string in test_strings:
@@ -293,8 +286,6 @@ def test_code_file_output():
 
         for message in messages:
             log_file.write(message)
-
-    # test_arithmetic_encoding_decoding('AAC')
 
 
 def read_file_bits(filename):
