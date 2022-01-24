@@ -35,7 +35,7 @@ def shift_left_and_fill(number, fill_bit):
 
 
 def binary_arithmetic_encoding(input_list):
-    
+
     c1, c2 = calculate_binary_symbol_frequency(input_list)
     D = int('00000000', 2)
     R = int('100000000', 2)
@@ -46,7 +46,7 @@ def binary_arithmetic_encoding(input_list):
 
     k = 0
     for element in input_list:
-      
+
         R1 = math.floor(R * mult_factor)
         R2 = R - R1
 
@@ -57,12 +57,12 @@ def binary_arithmetic_encoding(input_list):
             R = R2
 
         normalizuj_kod(D, R, LN, out_list)
-    
+
     k = 0
     ending = []
     last_bit = D & int('00000001', 2)
 
-    ## jeśli zakodowany ciąg ma długość mniej niz 8 - doklejamy znaczące bity z D albo zera 
+    # jeśli zakodowany ciąg ma długość mniej niz 8 - doklejamy znaczące bity z D albo zera
     while last_bit == 0 and k < 8:
         D >>= 1
         last_bit = D & int('00000001', 2)
@@ -85,6 +85,7 @@ def binary_arithmetic_encoding(input_list):
         out_list += zeros_array
 
     return [out_list, c1, c2]
+
 
 def binary_arithmetic_decoding(input_string, c1, c2):
     POL = 1 << 7
@@ -117,30 +118,33 @@ def binary_arithmetic_decoding(input_string, c1, c2):
 
         normalizuj_dek(input_string, D, R, Kn, input_string_counter)
         k += 1
-        
+
     return output
 
+
 def normalizuj_dek(input_string, D, R, Kn, input_string_counter):
-    POL = 1 << 7                  
+    POL = 1 << 7
     CWIERC = 1 << 6
 
     while R <= CWIERC:
-        if D + R <= POL: 
+        if D + R <= POL:
             pass
         elif D >= POL:
-            D -= POL 
-            Kn -= POL 
-        else: 
-            D -= CWIERC 
-            Kn -= CWIERC 
-        D <<= 1
-        R <<= 1
-        Kn <<= 1
-        Kn = shift_left_and_fill(Kn, int(input_string[input_string_counter] if input_string_counter < len(input_string) else 0))
+            D -= POL
+            Kn -= POL
+        else:
+            D -= CWIERC
+            Kn -= CWIERC
+        D = shift_left_and_fill(D, 0)
+        R = shift_left_and_fill(R, 0)
+        Kn = shift_left_and_fill(Kn, 0)
+        Kn = shift_left_and_fill(Kn, int(
+            input_string[input_string_counter] if input_string_counter < len(input_string) else 0))
         input_string_counter += 1
 
+
 def normalizuj_kod(D, R, LN, out_list):
-    POL = 1 << 7                  
+    POL = 1 << 7
     CWIERC = 1 << 6
 
     while R <= CWIERC:
@@ -157,9 +161,10 @@ def normalizuj_kod(D, R, LN, out_list):
                 LN -= 1
         else:
             LN += 1
-            D -= CWIERC 
-        D <<= 1
-        R <<= 1
+            D -= CWIERC
+        D = shift_left_and_fill(D, 0)
+        R = shift_left_and_fill(R, 0)
+
 
 def test_binary_arithmetic_encoding_decoding(input_string):
     messages = []
@@ -197,7 +202,6 @@ def run_test():
 
     print(test_cases)
     for case in test_cases:
-        print(type(case))
         result, messages = test_binary_arithmetic_encoding_decoding(case)
         if case != result:
             failed_cases.append(case)
