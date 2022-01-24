@@ -6,6 +6,7 @@ from matplotlib import pyplot as plt
 # from bitstring import BitArray
 import math
 
+
 def calculate_binary_symbol_frequency(input_list):
     c1, c2 = 0, 0
     for element in input_list:
@@ -15,24 +16,28 @@ def calculate_binary_symbol_frequency(input_list):
             c2 += 1
     return c1, c2
 
+
 def printB(binarty_int, variable=''):
     print_num = bin(binarty_int)[2:]
     while len(print_num) < 8:
         print_num = '0' + print_num
     print(variable + ': ' + print_num + ' (' + str(binarty_int) + ')')
 
+
 def join_int_list(int_list):
     return ''.join(list(map(str, int_list)))
+
 
 def shift_left_and_fill(number, fill_bit):
     shifted = (number << 1) & int(f'0000000011111111', 2)
     printB(shifted, 'shifted')
     return shifted | int(f'0000000{fill_bit}', 2)
 
+
 def binary_arithmetic_encoding(input_list):
-    POL = 1 << 7                  
+    POL = 1 << 7
     CWIERC = 1 << 6
-    
+
     c1, c2 = calculate_binary_symbol_frequency(input_list)
     N = c1 + c2
     D = int('00000000', 2)
@@ -43,7 +48,7 @@ def binary_arithmetic_encoding(input_list):
     mult_factor = c1 / (c1 + c2)
 
     k = 0
-    
+
     for element in input_list:
         R = G - D + 1
         R1 = math.floor(R * mult_factor)
@@ -69,10 +74,10 @@ def binary_arithmetic_encoding(input_list):
                     LN -= 1
             else:
                 LN += 1
-                D -= CWIERC 
+                D -= CWIERC
             D <<= 1
             R <<= 1
-    
+
     k = 0
     ending = []
     last_bit = D & int('00000001', 2)
@@ -92,7 +97,7 @@ def binary_arithmetic_encoding(input_list):
 
         out_list += ending
     elif len(out_list) < 8:
-        zeros_to_add = 8 - len(out_list) if len(out_list) < 8 else 0 
+        zeros_to_add = 8 - len(out_list) if len(out_list) < 8 else 0
         zeros_array = []
         i = 0
         while i < zeros_to_add:
@@ -127,30 +132,32 @@ def binary_arithmetic_decoding(input_string, c1, c2):
         R2 = R - R1
 
         if Kn - D >= R2:
-            R = R1 #128
-            D += R2 #128
-            output.append('0') # 0
+            R = R1  # 128
+            D += R2  # 128
+            output.append('0')  # 0
         else:
             R = R2
             output.append('1')
 
         while R <= CWIERC:
-            if D + R <= POL: 
+            if D + R <= POL:
                 pass
             elif D >= POL:
-                D -= POL 
-                Kn -= POL 
-            else: 
-                D -= CWIERC 
-                Kn -= CWIERC 
+                D -= POL
+                Kn -= POL
+            else:
+                D -= CWIERC
+                Kn -= CWIERC
             D <<= 1
             R <<= 1
             Kn <<= 1
-            Kn = shift_left_and_fill(Kn, int(input_string[input_string_counter] if input_string_counter < len(input_string) else 0))
+            Kn = shift_left_and_fill(Kn, int(
+                input_string[input_string_counter] if input_string_counter < len(input_string) else 0))
             input_string_counter += 1
         k += 1
         
     return output
+
 
 def test_binary_arithmetic_encoding_decoding(input_string):
     messages = []
@@ -173,31 +180,38 @@ def test_binary_arithmetic_encoding_decoding(input_string):
         messages.append('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n')
     return decoded_string, messages
 
+
 def run_test():
     MIN_LENGTH = 2
     MAX_LENGTH = 6
     test_cases = []
 
     for length in range(MIN_LENGTH, MAX_LENGTH + 1):
-        new_cases = [''.join(item) for item in itertools.product('01', repeat=length)]
+        new_cases = [''.join(item)
+                     for item in itertools.product('01', repeat=length)]
         test_cases.extend(new_cases)
 
     failed_cases = []
+    succeeded_cases = []
 
     print(test_cases)
     for case in test_cases:
         print(type(case))
-        print(f'########## case: {case} ##########')
         result, messages = test_binary_arithmetic_encoding_decoding(case)
         if case != result:
             failed_cases.append(case)
-            print(f'case: {case} result: {result}')
+        else:
+            succeeded_cases.append(case)
 
     print(f'Succeed: {len(test_cases) - len(failed_cases)}')
     print(f'Failed: {len(failed_cases)}')
 
+    print('Succeed cases:')
+    print(succeeded_cases)
+
     print('Failed cases:')
     print(failed_cases)
+
 
 if __name__ == '__main__':
     run_test()
