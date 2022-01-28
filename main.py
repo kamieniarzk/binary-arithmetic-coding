@@ -62,18 +62,16 @@ def binary_arithmetic_encoding(input_list):
     lps, clps = getLpsClps(c0, c1)
 
     L = 0
-    R = 2**b
+    R = 2**(b)
 
     LN = 0
     k = 0
 
     out_list = []
 
-    mult_factor = clps / (c0 + c1)
-
     k = 0
     for bit in input_list:
-        rLPS = math.floor(R * mult_factor)
+        rLPS = math.floor(R * clps / (c0 + c1))
         rMPS = R - rLPS
 
         if bit == lps:
@@ -86,7 +84,6 @@ def binary_arithmetic_encoding(input_list):
 
     k = 0
     ending = []
-    last_bit = L & int('00000001', 2)
 
     # # # jeśli zakodowany ciąg ma długość mniej niz 8 - doklejamy znaczące bity z L albo zera
     # while last_bit == 0 and k < 8:
@@ -112,8 +109,8 @@ def binary_arithmetic_encoding(input_list):
 
     out_list += endingR
 
-    if len(out_list) < b:
-        zeros_to_add = b - len(out_list)
+    if (len(out_list) % b) != 0:
+        zeros_to_add = b - (len(out_list) % b)
         zeros_array = []
         i = 0
         while i < zeros_to_add:
@@ -136,10 +133,13 @@ def encoder_renormalization(L, R, LN, out_list):
     while R <= quarterB:
         if L + R <= halfB:
             out_list += bit_plus_follow('0', LN)
+            LN = 0
 
         elif L >= halfB:
             out_list += bit_plus_follow('1', LN)
             L = L - halfB
+            LN = 0
+
         else:
             LN += 1
             L -= quarterB
@@ -152,11 +152,10 @@ def encoder_renormalization(L, R, LN, out_list):
 
 def binary_arithmetic_decoding(input_string, c0, c1):
     L = 0
-    R = 2**b
+    R = 2**(b)
 
     lps, clps = getLpsClps(c0, c1)
     N = c0 + c1
-    mult_factor = clps / (c0 + c1)
 
     input_len = len(input_string)
     V_initial_len = b if input_len > b else input_len
@@ -166,11 +165,11 @@ def binary_arithmetic_decoding(input_string, c0, c1):
     k = 0
     input_counter = V_initial_len
 
-    D = V - L
+    D = V
 
     while k < N:
 
-        rLPS = math.floor(R * mult_factor)
+        rLPS = math.floor(R * clps / (c0 + c1))
         rMPS = R - rLPS
 
         if D >= rMPS:
@@ -181,8 +180,15 @@ def binary_arithmetic_decoding(input_string, c0, c1):
             output.append(str(1 - int(lps)))
             R = rMPS
 
-        input_string, D, R, V, input_counter = decoder_renormalization(
-            input_string, D, R, V, input_counter)
+        # assert R != 0
+        # input_string, D, R, V, input_counter = decoder_renormalization(
+        #     input_string, D, R, V, input_counter)
+
+        while R <= quarterB:
+            R = shift_left_and_fill(R)
+            D = shift_left_and_add(D, pobierz_bit(input_string, input_counter))
+            input_counter += 1
+
         k += 1
 
     return output
@@ -234,8 +240,8 @@ def test_binary_arithmetic_encoding_decoding(input_string):
 
 
 def run_test():
-    MIN_LENGTH = 8
-    MAX_LENGTH = 9
+    MIN_LENGTH = 1
+    MAX_LENGTH = 8
     test_cases = []
 
     for length in range(MIN_LENGTH, MAX_LENGTH + 1):
@@ -246,7 +252,6 @@ def run_test():
     failed_cases = []
     succeeded_cases = []
 
-    print(test_cases)
     for case in test_cases:
         result, messages = test_binary_arithmetic_encoding_decoding(case)
         if case != result:
@@ -254,14 +259,14 @@ def run_test():
         else:
             succeeded_cases.append(case)
 
+    print('Succeed cases:')
+    print(succeeded_cases)
+
+    print('Failed cases:')
+    print(failed_cases)
+
     print(f'Succeed: {len(test_cases) - len(failed_cases)}')
     print(f'Failed: {len(failed_cases)}')
-
-    # print('Succeed cases:')
-    # print(succeeded_cases)
-
-    # print('Failed cases:')
-    # print(failed_cases)
 
 
 if __name__ == '__main__':
