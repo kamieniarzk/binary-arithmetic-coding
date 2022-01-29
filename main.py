@@ -1,17 +1,11 @@
+import itertools
+import math
 import random
 
-import numpy as np
-import itertools
-from bitstring import BitArray
 from bitarray import bitarray
-from PIL import Image
-from matplotlib import cm
-from matplotlib import pyplot as plt
-# from bitstring import BitArray
-import math
 
 int_size = 32
-b = 8 # register length
+b = 8  # register length
 b_bit_map = '0' * (int_size - b) + '1' * b
 halfB = 2 ** (b - 1)
 quarterB = 2 ** (b - 2)
@@ -62,26 +56,15 @@ def binary_arithmetic_encoding(input_sequence: bitarray):
         else:
             R = R2
 
-        while R <= quarterB:
-            if D >= halfB:
-                out_list.append(1)
-                while LN > 0:
-                    out_list.append(0)
-                    LN -= 1
-                D -= halfB
-            elif D + R <= halfB:
-                out_list.append(0)
-                while LN > 0:
-                    out_list.append(1)
-                    LN -= 1
-            else:
-                LN += 1
-                D -= quarterB
-            D = shift_left_and_fill(D, 0)
-            R = shift_left_and_fill(R, 0)
+        D, LN, R = normalize_encode(D, LN, R, out_list)
 
+    out_list += flush_bits_from_D(D, LN)
+
+    return [out_list, c0, c1]
+
+
+def flush_bits_from_D(D, LN):
     endingR = []
-
     for i in range(0, b):
         last_bit = D & 1
         D >>= 1
@@ -90,10 +73,28 @@ def binary_arithmetic_encoding(input_sequence: bitarray):
                 endingR.insert(0, 1 - last_bit)
                 LN -= 1
         endingR.insert(0, last_bit)
+    return endingR
 
-    out_list += endingR
 
-    return [out_list, c0, c1]
+def normalize_encode(D, LN, R, out_list):
+    while R <= quarterB:
+        if D >= halfB:
+            out_list.append(1)
+            while LN > 0:
+                out_list.append(0)
+                LN -= 1
+            D -= halfB
+        elif D + R <= halfB:
+            out_list.append(0)
+            while LN > 0:
+                out_list.append(1)
+                LN -= 1
+        else:
+            LN += 1
+            D -= quarterB
+        D = shift_left_and_fill(D, 0)
+        R = shift_left_and_fill(R, 0)
+    return D, LN, R
 
 
 def binary_arithmetic_decoding(encoded_sequence, c0, c1):
@@ -119,23 +120,28 @@ def binary_arithmetic_decoding(encoded_sequence, c0, c1):
             R = R2
             output.append(0)
 
-        while R <= quarterB:
-            if D + R <= halfB:
-                pass
-            elif D >= halfB:
-                D -= halfB
-                Kn -= halfB
-            else:
-                D -= quarterB
-                Kn -= quarterB
-            D = shift_left_and_fill(D, 0)
-            R = shift_left_and_fill(R, 0)
-            Kn = shift_left_and_fill(Kn, str(
-                encoded_sequence[input_string_counter] if input_string_counter < len(encoded_sequence) else '0'))
-            input_string_counter += 1
+        D, Kn, R, input_string_counter = normalize_decode(D, Kn, R, encoded_sequence, input_string_counter)
         k += 1
 
     return output
+
+
+def normalize_decode(D, Kn, R, encoded_sequence, input_string_counter):
+    while R <= quarterB:
+        if D + R <= halfB:
+            pass
+        elif D >= halfB:
+            D -= halfB
+            Kn -= halfB
+        else:
+            D -= quarterB
+            Kn -= quarterB
+        D = shift_left_and_fill(D, 0)
+        R = shift_left_and_fill(R, 0)
+        Kn = shift_left_and_fill(Kn, str(
+            encoded_sequence[input_string_counter] if input_string_counter < len(encoded_sequence) else '0'))
+        input_string_counter += 1
+    return D, Kn, R, input_string_counter
 
 
 def test_binary_arithmetic_encoding_decoding(input_sequence: bitarray):
@@ -195,7 +201,7 @@ def test_arbitrary_sequence_with_given_length(length: int):
 
 
 if __name__ == '__main__':
-    run_test_with_all_possible_binary_numbers_in_range(8, 10)
+    run_test_with_all_possible_binary_numbers_in_range(8, 13)
 
     input_file_path = 'images/pseudokod.jpg'
     compressed_file_path = 'compressed.txt'
@@ -203,4 +209,3 @@ if __name__ == '__main__':
 
     # run_test_with_file(input_file_path, compressed_file_path, decoded_file_path)
     # test_arbitrary_sequence_with_given_length(1000000)
-
