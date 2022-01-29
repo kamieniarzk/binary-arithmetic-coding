@@ -75,35 +75,18 @@ def binary_arithmetic_encoding(input_list):
             D = shift_left_and_fill(D, 0)
             R = shift_left_and_fill(R, 0)
 
-    k = 0
-    ending = []
-    last_bit = D & int('00000001', 2)
+    endingR = []
 
-    # jeśli zakodowany ciąg ma długość mniej niz 8 - doklejamy znaczące bity z D albo zera
-    while last_bit == 0 and k < 8:
-        print('SHIFTING RIGHT ')
-        printB(D, 'D')
+    for i in range(0, 8):
+        last_bit = D & 1
         D >>= 1
-        last_bit = D & int('00000001', 2)
-        k += 1
+        if i == 7:
+            while LN > 0:
+                endingR.insert(0, 1 - last_bit)
+                LN -= 1
+        endingR.insert(0, last_bit)
 
-    if k < 8:
-        for i in range(k, 8):
-            last_bit = D & int('00000001', 2)
-            print('SHIFTING RIGHT ')
-            printB(D, 'D')
-            D >>= 1
-            ending.insert(0, last_bit)
-        print(f'Ending: {ending}')
-        out_list += ending
-    if len(out_list) < 8:
-        zeros_to_add = 8 - len(out_list) 
-        zeros_array = []
-        i = 0
-        while i < zeros_to_add:
-            zeros_array.append(0)
-            i += 1
-        out_list += zeros_array
+    out_list += endingR
 
     return [out_list, c1, c2]
 
@@ -177,8 +160,8 @@ def test_binary_arithmetic_encoding_decoding(input_string):
 
 
 def run_test():
-    MIN_LENGTH = 2
-    MAX_LENGTH = 6
+    MIN_LENGTH = 6
+    MAX_LENGTH = 12
     test_cases = []
 
     for length in range(MIN_LENGTH, MAX_LENGTH + 1):
