@@ -286,6 +286,7 @@ def test_all_files_from_directory(directory_path, compressed_path, decoded_path,
             output.write(f'file: {filename}:\t')
             output.write(f'input size (bits): {input_len}\t')
             output.write(f'encoded size (bits): {encoded_len}\t')
+            output.write(f'compression rate: {input_len / encoded_len}\t')
             output.write(f'encoding time (s): {encoding_length}\t')
             output.write(f'decoding time size (s): {decoding_length}\n\n')
 

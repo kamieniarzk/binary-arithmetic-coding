@@ -1,12 +1,12 @@
-file: peppers.pgm:	input size (bits): 2097456	encoded size (bits): 2095439	encoding time (s): 0.9981579580000001	decoding time size (s): 1.218635708
+file: peppers.pgm:	input size (bits): 2097456	encoded size (bits): 2095439	compression rate: 1.0009625667938795	encoding time (s): 0.841818709	decoding time size (s): 1.1413674169999999
 
-file: lena.pgm:	input size (bits): 2097456	encoded size (bits): 2097273	encoding time (s): 0.8676449579999996	decoding time size (s): 1.1905087919999997
+file: lena.pgm:	input size (bits): 2097456	encoded size (bits): 2097273	compression rate: 1.0000872561655063	encoding time (s): 0.8395528329999999	decoding time size (s): 1.1265770829999995
 
-file: boat.pgm:	input size (bits): 2097456	encoded size (bits): 2095161	encoding time (s): 0.8756787500000005	decoding time size (s): 1.2505904579999996
+file: boat.pgm:	input size (bits): 2097456	encoded size (bits): 2095161	compression rate: 1.0010953812141405	encoding time (s): 0.8546450840000004	decoding time size (s): 1.138543792
 
-file: barbara.pgm:	input size (bits): 2097456	encoded size (bits): 2097077	encoding time (s): 0.9487038329999997	decoding time size (s): 1.2626637910000005
+file: barbara.pgm:	input size (bits): 2097456	encoded size (bits): 2097077	compression rate: 1.0001807277462869	encoding time (s): 0.8493382499999997	decoding time size (s): 1.1392947919999994
 
-file: chronometer.pgm:	input size (bits): 2097456	encoded size (bits): 2002507	encoding time (s): 0.8837586250000005	decoding time size (s): 1.149408792000001
+file: chronometer.pgm:	input size (bits): 2097456	encoded size (bits): 2002507	compression rate: 1.0474150652157521	encoding time (s): 0.846434416000001	decoding time size (s): 1.1414852910000004
 
-file: mandril.pgm:	input size (bits): 2097456	encoded size (bits): 2097463	encoding time (s): 0.8395557090000008	decoding time size (s): 1.2994793330000007
+file: mandril.pgm:	input size (bits): 2097456	encoded size (bits): 2097463	compression rate: 0.9999966626348117	encoding time (s): 0.8023737920000009	decoding time size (s): 1.1333477920000004
 

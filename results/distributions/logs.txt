@@ -1,14 +1,14 @@
-file: normal_10.pgm:	input size (bits): 2097272	encoded size (bits): 2097561	encoding time (s): 0.9226812089999985	decoding time size (s): 1.3427360000000004
+file: normal_10.pgm:	input size (bits): 2097272	encoded size (bits): 2097561	compression rate: 0.9998622209318346	encoding time (s): 0.8512511249999992	decoding time size (s): 1.1380264999999987
 
-file: laplace_30.pgm:	input size (bits): 2097272	encoded size (bits): 2097832	encoding time (s): 0.9997146250000011	decoding time size (s): 1.1893864580000013
+file: laplace_30.pgm:	input size (bits): 2097272	encoded size (bits): 2097832	compression rate: 0.9997330577472362	encoding time (s): 0.8906650420000002	decoding time size (s): 1.1336043750000009
 
-file: laplace_20.pgm:	input size (bits): 2097272	encoded size (bits): 2097703	encoding time (s): 0.8736786670000001	decoding time size (s): 1.1887271659999996
+file: laplace_20.pgm:	input size (bits): 2097272	encoded size (bits): 2097703	compression rate: 0.999794537167559	encoding time (s): 0.840602999999998	decoding time size (s): 1.136944959000001
 
-file: uniform.pgm:	input size (bits): 2097272	encoded size (bits): 2097919	encoding time (s): 0.934445084	decoding time size (s): 1.213499291999998
+file: uniform.pgm:	input size (bits): 2097272	encoded size (bits): 2097919	compression rate: 0.9996915991513495	encoding time (s): 0.8720843330000001	decoding time size (s): 1.1400299999999994
 
-file: laplace_10.pgm:	input size (bits): 2097272	encoded size (bits): 2097134	encoding time (s): 0.8900037500000018	decoding time size (s): 1.175602125000001
+file: laplace_10.pgm:	input size (bits): 2097272	encoded size (bits): 2097134	compression rate: 1.0000658040926331	encoding time (s): 0.8475747910000031	decoding time size (s): 1.1319919580000004
 
-file: normal_50.pgm:	input size (bits): 2097272	encoded size (bits): 2097279	encoding time (s): 0.9410960410000015	decoding time size (s): 1.1548344169999964
+file: normal_50.pgm:	input size (bits): 2097272	encoded size (bits): 2097279	compression rate: 0.9999966623420156	encoding time (s): 0.8094407910000001	decoding time size (s): 1.126654792
 
-file: normal_30.pgm:	input size (bits): 2097272	encoded size (bits): 2097891	encoding time (s): 0.8825627500000017	decoding time size (s): 1.2139149590000002
+file: normal_30.pgm:	input size (bits): 2097272	encoded size (bits): 2097891	compression rate: 0.9997049417724753	encoding time (s): 0.8528491249999988	decoding time size (s): 1.137572500000001
 
