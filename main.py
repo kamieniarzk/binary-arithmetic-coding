@@ -4,6 +4,8 @@ import random
 from bitarray import bitarray
 from timeit import default_timer as timer
 from os import walk
+import numpy as np
+import matplotlib.pyplot as plt
 
 INT_SIZE = 32
 B = 8  # register length - at least 8
@@ -190,9 +192,9 @@ def run_test_with_file(input_file_path: str, compressed_file_path: str, decoded_
     decoded = binary_arithmetic_decoding(encoded, c0, c1)
     end_decode = timer()
     decoded.tofile(open(decoded_file_path, 'wb'))
-    print(f'compression rate: {input_len / encoded_len}')
-    print(f'compression time: {end_decode - start_encode}')
-    print(f'decompression time: {end_decode - start_decode}')
+    print(f'compression rate: {round(input_len / encoded_len, 5)}')
+    print(f'compression time: {round(end_decode - start_encode, 5)}')
+    print(f'decompression time: {round(end_decode - start_decode, 5)}')
 
 
 def test_arbitrary_sequence_with_given_length(length: int):
@@ -213,6 +215,24 @@ def test_all_files_from_directory(directory_path, compressed_path, decoded_path)
         print('\n')
 
 
+def read_pgm(pgmf):
+    """Return a raster of integers from a PGM as a list of lists."""
+    first_line = pgmf.readline()
+    assert first_line == b'P5\n'
+    second_line = pgmf.readline()
+    (width, height) = [int(i) for i in second_line.split()]
+    depth = int(pgmf.readline())
+    assert depth <= 255
+
+    raster = []
+    for y in range(height):
+        row = []
+        for y in range(width):
+            row.append(ord(pgmf.read(1)))
+        raster.append(row)
+    return raster
+
+
 if __name__ == '__main__':
     # run_test_with_all_possible_binary_numbers_in_range(8, 13)
 
@@ -220,7 +240,13 @@ if __name__ == '__main__':
     compressed_file_path = 'compressed.txt'
     decoded_file_path = 'decoded.pgm'
 
-    test_all_files_from_directory('data/distributions', compressed_file_path, decoded_file_path)
+    pgmf = read_pgm(open(input_file_path, 'rb'))
+    array = np.array(pgmf).flatten()
+    print(array.shape)
+    plt.hist(array, bins=range(0, 257))  # arguments are passed to np.histogram
+    plt.title(f'{input_file_path} histogram')
+    plt.show()
+    # test_all_files_from_directory('data/images', compressed_file_path, decoded_file_path)
     # print(f'file: {input_file_path}')
     # run_test_with_file(input_file_path, compressed_file_path, decoded_file_path)
     # test_arbitrary_sequence_with_given_length(1000000)
