@@ -1,14 +1,20 @@
-file: normal_10.pgm:	input size (bits): 2097272	encoded size (bits): 2097561	compression rate: 0.9998622209318346	encoding time (s): 0.8512511249999992	decoding time size (s): 1.1380264999999987
+file: normal_10.pgm:	input size (bits): 2097272	encoded size (bits): 2097225	compression rate: 1.0000224105663436	encoding time (s): 0.9777397089999997	decoding time size (s): 1.455277125000002
 
-file: laplace_30.pgm:	input size (bits): 2097272	encoded size (bits): 2097832	compression rate: 0.9997330577472362	encoding time (s): 0.8906650420000002	decoding time size (s): 1.1336043750000009
+file: geometr_09.pgm:	input size (bits): 2097272	encoded size (bits): 1705974	compression rate: 1.229369263540945	encoding time (s): 0.9453013749999997	decoding time size (s): 1.2264014170000017
 
-file: laplace_20.pgm:	input size (bits): 2097272	encoded size (bits): 2097703	compression rate: 0.999794537167559	encoding time (s): 0.840602999999998	decoding time size (s): 1.136944959000001
+file: geometr_099.pgm:	input size (bits): 2097272	encoded size (bits): 2067310	compression rate: 1.0144932303331382	encoding time (s): 0.9435892500000023	decoding time size (s): 1.3241564999999973
 
-file: uniform.pgm:	input size (bits): 2097272	encoded size (bits): 2097919	compression rate: 0.9996915991513495	encoding time (s): 0.8720843330000001	decoding time size (s): 1.1400299999999994
+file: laplace_30.pgm:	input size (bits): 2097272	encoded size (bits): 2097299	compression rate: 0.9999871262991114	encoding time (s): 0.9284532499999969	decoding time size (s): 1.3299925419999994
 
-file: laplace_10.pgm:	input size (bits): 2097272	encoded size (bits): 2097134	compression rate: 1.0000658040926331	encoding time (s): 0.8475747910000031	decoding time size (s): 1.1319919580000004
+file: laplace_20.pgm:	input size (bits): 2097272	encoded size (bits): 2097282	compression rate: 0.9999952319239854	encoding time (s): 0.957158500000002	decoding time size (s): 1.356156416000001
 
-file: normal_50.pgm:	input size (bits): 2097272	encoded size (bits): 2097279	compression rate: 0.9999966623420156	encoding time (s): 0.8094407910000001	decoding time size (s): 1.126654792
+file: uniform.pgm:	input size (bits): 2097272	encoded size (bits): 2097302	compression rate: 0.9999856959083623	encoding time (s): 0.9759335419999999	decoding time size (s): 1.3195687909999982
 
-file: normal_30.pgm:	input size (bits): 2097272	encoded size (bits): 2097891	compression rate: 0.9997049417724753	encoding time (s): 0.8528491249999988	decoding time size (s): 1.137572500000001
+file: laplace_10.pgm:	input size (bits): 2097272	encoded size (bits): 2097018	compression rate: 1.0001211243775685	encoding time (s): 0.9343793749999989	decoding time size (s): 1.3433632079999995
+
+file: normal_50.pgm:	input size (bits): 2097272	encoded size (bits): 2097302	compression rate: 0.9999856959083623	encoding time (s): 0.9663059589999996	decoding time size (s): 1.3096570000000014
+
+file: geometr_05.pgm:	input size (bits): 2097272	encoded size (bits): 1273395	compression rate: 1.646992488583668	encoding time (s): 0.7704770829999958	decoding time size (s): 1.0964714999999998
+
+file: normal_30.pgm:	input size (bits): 2097272	encoded size (bits): 2097302	compression rate: 0.9999856959083623	encoding time (s): 0.9391567499999951	decoding time size (s): 1.3038501249999968
 

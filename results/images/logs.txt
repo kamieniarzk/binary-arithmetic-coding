@@ -1,12 +1,12 @@
-file: peppers.pgm:	input size (bits): 2097456	encoded size (bits): 2095439	compression rate: 1.0009625667938795	encoding time (s): 0.841818709	decoding time size (s): 1.1413674169999999
+file: peppers.pgm:	input size (bits): 2097456	encoded size (bits): 2095664	compression rate: 1.0008550989089855	encoding time (s): 0.9290659170000001	decoding time size (s): 1.30267925
 
-file: lena.pgm:	input size (bits): 2097456	encoded size (bits): 2097273	compression rate: 1.0000872561655063	encoding time (s): 0.8395528329999999	decoding time size (s): 1.1265770829999995
+file: lena.pgm:	input size (bits): 2097456	encoded size (bits): 2097142	compression rate: 1.0001497275816325	encoding time (s): 0.9613939999999999	decoding time size (s): 1.3198812500000003
 
-file: boat.pgm:	input size (bits): 2097456	encoded size (bits): 2095161	compression rate: 1.0010953812141405	encoding time (s): 0.8546450840000004	decoding time size (s): 1.138543792
+file: boat.pgm:	input size (bits): 2097456	encoded size (bits): 2095086	compression rate: 1.0011312184798142	encoding time (s): 0.936512875	decoding time size (s): 1.342981334
 
-file: barbara.pgm:	input size (bits): 2097456	encoded size (bits): 2097077	compression rate: 1.0001807277462869	encoding time (s): 0.8493382499999997	decoding time size (s): 1.1392947919999994
+file: barbara.pgm:	input size (bits): 2097456	encoded size (bits): 2096891	compression rate: 1.0002694465282171	encoding time (s): 0.9339093340000009	decoding time size (s): 1.3273664580000002
 
-file: chronometer.pgm:	input size (bits): 2097456	encoded size (bits): 2002507	compression rate: 1.0474150652157521	encoding time (s): 0.846434416000001	decoding time size (s): 1.1414852910000004
+file: chronometer.pgm:	input size (bits): 2097456	encoded size (bits): 2001960	compression rate: 1.047701252772283	encoding time (s): 0.948644625	decoding time size (s): 1.334730541999999
 
-file: mandril.pgm:	input size (bits): 2097456	encoded size (bits): 2097463	compression rate: 0.9999966626348117	encoding time (s): 0.8023737920000009	decoding time size (s): 1.1333477920000004
+file: mandril.pgm:	input size (bits): 2097456	encoded size (bits): 2097317	compression rate: 1.0000662751505853	encoding time (s): 0.9440692499999983	decoding time size (s): 1.3276369999999993
 

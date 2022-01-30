@@ -8,7 +8,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 INT_SIZE = 32
-B = 8  # register length - at least 8
+B = 32  # register length - at least 8
 B_BIT_MAP = '0' * (INT_SIZE - B) + '1' * B
 HALF_B = 2 ** (B - 1)
 QUARTER_B = 2 ** (B - 2)
