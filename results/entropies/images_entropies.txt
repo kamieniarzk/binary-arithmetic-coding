@@ -1,0 +1,6 @@
+Entropy of barbara.pgm: 7.632119010904524
+Entropy of boat.pgm: 7.190964530677784
+Entropy of chronometer.pgm: 6.112668484460577
+Entropy of lena.pgm: 7.445061352834158
+Entropy of mandril.pgm: 7.2924801101305805
+Entropy of peppers.pgm: 6.7607942517688455

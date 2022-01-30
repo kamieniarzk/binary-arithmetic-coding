@@ -1,0 +1,36 @@
+Results for barbara.pgm:
+Input size (bits): 2097456
+Encoded size (bits): 2097077
+Encoding time (s): 1.5166234000000003
+Decoding time size (s): 2.0990064000000004
+
+Results for boat.pgm:
+Input size (bits): 2097456
+Encoded size (bits): 2095161
+Encoding time (s): 1.5211080999999993
+Decoding time size (s): 2.092687099999999
+
+Results for chronometer.pgm:
+Input size (bits): 2097456
+Encoded size (bits): 2002507
+Encoding time (s): 1.5089823000000013
+Decoding time size (s): 2.0859020999999984
+
+Results for lena.pgm:
+Input size (bits): 2097456
+Encoded size (bits): 2097273
+Encoding time (s): 1.5262805999999998
+Decoding time size (s): 2.0751489999999997
+
+Results for mandril.pgm:
+Input size (bits): 2097456
+Encoded size (bits): 2097463
+Encoding time (s): 1.4477718000000017
+Decoding time size (s): 2.114505300000001
+
+Results for peppers.pgm:
+Input size (bits): 2097456
+Encoded size (bits): 2095439
+Encoding time (s): 1.5538926999999987
+Decoding time size (s): 2.1163334999999996
+

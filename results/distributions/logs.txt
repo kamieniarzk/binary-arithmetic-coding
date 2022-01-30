@@ -1,0 +1,60 @@
+Results for geometr_05.pgm:
+Input size (bits): 2097272
+Encoded size (bits): 1273433
+Encoding time (s): 1.295569799999999
+Decoding time size (s): 1.774233800000001
+
+Results for geometr_09.pgm:
+Input size (bits): 2097272
+Encoded size (bits): 1705435
+Encoding time (s): 1.3863292999999999
+Decoding time size (s): 1.9146848999999975
+
+Results for geometr_099.pgm:
+Input size (bits): 2097272
+Encoded size (bits): 2067547
+Encoding time (s): 1.504466200000003
+Decoding time size (s): 2.0840034000000003
+
+Results for laplace_10.pgm:
+Input size (bits): 2097272
+Encoded size (bits): 2097134
+Encoding time (s): 1.5348354999999998
+Decoding time size (s): 2.090480999999997
+
+Results for laplace_20.pgm:
+Input size (bits): 2097272
+Encoded size (bits): 2097703
+Encoding time (s): 1.523335699999997
+Decoding time size (s): 2.0908066000000005
+
+Results for laplace_30.pgm:
+Input size (bits): 2097272
+Encoded size (bits): 2097832
+Encoding time (s): 1.5231799000000024
+Decoding time size (s): 2.0822292000000004
+
+Results for normal_10.pgm:
+Input size (bits): 2097272
+Encoded size (bits): 2097561
+Encoding time (s): 1.5171279999999996
+Decoding time size (s): 2.1078158999999985
+
+Results for normal_30.pgm:
+Input size (bits): 2097272
+Encoded size (bits): 2097891
+Encoding time (s): 1.5132256999999996
+Decoding time size (s): 2.110673200000001
+
+Results for normal_50.pgm:
+Input size (bits): 2097272
+Encoded size (bits): 2097279
+Encoding time (s): 1.438833300000006
+Decoding time size (s): 2.0797014999999988
+
+Results for uniform.pgm:
+Input size (bits): 2097272
+Encoded size (bits): 2097919
+Encoding time (s): 1.5117945000000006
+Decoding time size (s): 2.106090299999998
+

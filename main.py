@@ -211,20 +211,20 @@ def run_test_with_file(input_file_path: str, compressed_file_path: str, decoded_
     bits = bitarray()
     bits.fromfile(open(input_file_path, 'rb'))
     input_len = len(bits)
-    print(f'input length: {input_len}')
     start_encode = timer()
     encoded, c0, c1 = binary_arithmetic_encoding(bits)
-    end_decode = timer()
+    end_encode = timer()
     encoded_len = len(encoded)
-    print(f'encoded length: {encoded_len}')
     encoded.tofile(open(compressed_file_path, 'wb'))
     start_decode = timer()
     decoded = binary_arithmetic_decoding(encoded, c0, c1)
     end_decode = timer()
     decoded.tofile(open(decoded_file_path, 'wb'))
-    print(f'compression rate: {round(input_len / encoded_len, 5)}')
-    print(f'compression time: {round(end_decode - start_encode, 5)}')
-    print(f'decompression time: {round(end_decode - start_decode, 5)}')
+
+    encoding_length = end_encode - start_encode
+    decoding_length = end_decode - start_decode
+
+    return [input_len, encoded_len, encoding_length, decoding_length]
 
 
 def test_arbitrary_sequence_with_given_length(length: int):
@@ -237,7 +237,7 @@ def test_arbitrary_sequence_with_given_length(length: int):
     print(f'test passed: {success}, compression rate: {compression_rate}')
 
 
-def print_histograms_for_pgms_from_directory(directory_path):
+def print_histograms_for_pgms_from_directory(directory_path, output_path):
     filenames = next(walk(directory_path), (None, None, []))[2]
     for filename in filenames:
         full_path = directory_path + '/' + filename
@@ -245,7 +245,7 @@ def print_histograms_for_pgms_from_directory(directory_path):
         array = np.array(pgmf).flatten()
         plt.hist(array, bins=range(0, 257))
         plt.title(f'"{filename}" - Histogram')
-        plt.savefig(f'results/histograms/{filename}_histogram.png')
+        plt.savefig(f'{output_path}/{filename}_histogram.png')
         plt.close()
 
 
@@ -274,13 +274,20 @@ def calculate_entropy_for_pgms_from_directory(directory_path, results_path='resu
             file.write(f'Entropy of {filename}: {entropy}\n')
 
 
-def test_all_files_from_directory(directory_path, compressed_path, decoded_path):
+def test_all_files_from_directory(directory_path, compressed_path, decoded_path, logs_path):
     filenames = next(walk(directory_path), (None, None, []))[2]
-    for filename in filenames:
-        print(f'file: {filename}')
-        full_file_path = directory_path + '/' + filename
-        run_test_with_file(full_file_path, compressed_path, decoded_path)
-        print('\n')
+    with open(logs_path, 'w') as output:
+        for filename in filenames:
+            full_file_path = directory_path + '/' + filename
+            compressed_path_with_name = compressed_path + '/' + filename
+            decoded_path_with_name = decoded_path + '/' + filename
+            input_len, encoded_len, encoding_length, decoding_length = run_test_with_file(
+                full_file_path, compressed_path_with_name, decoded_path_with_name)
+            output.write(f'Results for {filename}:\n')
+            output.write(f'Input size (bits): {input_len}\n')
+            output.write(f'Encoded size (bits): {encoded_len}\n')
+            output.write(f'Encoding time (s): {encoding_length}\n')
+            output.write(f'Decoding time size (s): {decoding_length}\n\n')
 
 
 def read_line_ignore_comment(file):
@@ -312,19 +319,30 @@ def read_pgm(pgmf):
 if __name__ == '__main__':
     # run_test_with_all_possible_binary_numbers_in_range(8, 13)
 
-    input_file_path = 'data/distributions/uniform.pgm'
-    compressed_file_path = 'compressed.txt'
-    decoded_file_path = 'decoded.pgm'
+    distributions_path = 'data/distributions'
+    images_path = 'data/images'
+    entropies_path = 'results/entropies'
+    histograms_path = 'results/histograms'
+    distributions_entropies_filename = 'distributions_entropies.txt'
+    images_entropies_filename = 'images_entropies.txt'
+    encoded_images_path = 'results/images/encoded'
+    decoded_images_path = 'results/images/decoded'
+    encoded_distributions_path = 'results/distributions/encoded'
+    decoded_distributions_path = 'results/distributions/decoded'
+    images_data_path = 'results/images/logs.txt'
+    distributions_data_path = 'results/distributions/logs.txt'
 
-    print_histograms_for_pgms_from_directory('data/distributions')
-    print_histograms_for_pgms_from_directory('data/images')
+    print_histograms_for_pgms_from_directory(
+        distributions_path, histograms_path)
+    print_histograms_for_pgms_from_directory(
+        distributions_path, histograms_path)
 
     calculate_entropy_for_pgms_from_directory(
-        'data/distributions', 'results/entropies/distributions_entropy.txt')
+        distributions_path, f'{entropies_path}/{distributions_entropies_filename}')
     calculate_entropy_for_pgms_from_directory(
-        'data/images', 'results/entropies/images_entropy.txt')
+        images_path, f'{entropies_path}/{images_entropies_filename}')
 
-    # test_all_files_from_directory('data/images', compressed_file_path, decoded_file_path)
-    # print(f'file: {input_file_path}')
-    # run_test_with_file(input_file_path, compressed_file_path, decoded_file_path)
-    # test_arbitrary_sequence_with_given_length(1000000)
+    test_all_files_from_directory(
+        images_path, encoded_images_path, decoded_images_path, images_data_path)
+    test_all_files_from_directory(
+        distributions_path, encoded_distributions_path, decoded_distributions_path, distributions_data_path)
