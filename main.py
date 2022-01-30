@@ -3,6 +3,7 @@ import math
 import random
 from bitarray import bitarray
 from timeit import default_timer as timer
+from os import walk
 
 INT_SIZE = 32
 B = 8  # register length - at least 8
@@ -203,6 +204,15 @@ def test_arbitrary_sequence_with_given_length(length: int):
     print(f'test passed: {success}, compression rate: {compression_rate}')
 
 
+def test_all_files_from_directory(directory_path, compressed_path, decoded_path):
+    filenames = next(walk(directory_path), (None, None, []))[2]
+    for filename in filenames:
+        print(f'file: {filename}')
+        full_file_path = directory_path + '/' + filename
+        run_test_with_file(full_file_path, compressed_path, decoded_path)
+        print('\n')
+
+
 if __name__ == '__main__':
     # run_test_with_all_possible_binary_numbers_in_range(8, 13)
 
@@ -210,7 +220,8 @@ if __name__ == '__main__':
     compressed_file_path = 'compressed.txt'
     decoded_file_path = 'decoded.pgm'
 
-    print(f'file: {input_file_path}')
-    run_test_with_file(input_file_path, compressed_file_path, decoded_file_path)
+    test_all_files_from_directory('data/distributions', compressed_file_path, decoded_file_path)
+    # print(f'file: {input_file_path}')
+    # run_test_with_file(input_file_path, compressed_file_path, decoded_file_path)
     # test_arbitrary_sequence_with_given_length(1000000)
 
