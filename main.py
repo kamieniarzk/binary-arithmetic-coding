@@ -1,8 +1,11 @@
 import itertools
 import math
 import random
-
 from bitarray import bitarray
+from timeit import default_timer as timer
+from os import walk
+import numpy as np
+import matplotlib.pyplot as plt
 
 INT_SIZE = 32
 B = 8  # register length - at least 8
@@ -32,31 +35,25 @@ def join_int_list(int_list):
     return ''.join(list(map(str, int_list)))
 
 
-def shift_left_and_fill(number, fill_bit='0'):
-    shifted = (number << 1) & int(B_BIT_MAP, 2)
-    zeros = '0' * (INT_SIZE - 1)
-    return shifted | int(f'{zeros}{fill_bit}', 2)
-
-
 def binary_arithmetic_encoding(input_sequence: bitarray):
     c0, c1 = calculate_binary_symbol_frequency(input_sequence)
     d = 0
-    range = 2 ** B
+    r = 2 ** B
     bits_outstanding = 0
     out_array = bitarray()
     constant_coefficient = c0 / (c0 + c1)
 
     for symbol in input_sequence:
-        r1 = math.floor(range * constant_coefficient)
-        r2 = range - r1
+        r1 = math.floor(r * constant_coefficient)
+        r2 = r - r1
 
         if symbol:  # 1
-            range = r1
+            r = r1
             d = d + r2
         else:  # 0
-            range = r2
+            r = r2
 
-        d, bits_outstanding, range = normalize_encode(d, bits_outstanding, range, out_array)
+        d, bits_outstanding, r = normalize_encode(d, bits_outstanding, r, out_array)
 
     out_array += flush_bits_from_D(d, bits_outstanding)
 
@@ -76,15 +73,15 @@ def flush_bits_from_D(d, bits_outstanding):
     return endingR
 
 
-def normalize_encode(d, bits_outstanding, range, out_list):
-    while range <= QUARTER_B:
+def normalize_encode(d, bits_outstanding, r, out_list):
+    while r <= QUARTER_B:
         if d >= HALF_B:
             out_list.append(1)
             while bits_outstanding > 0:
                 out_list.append(0)
                 bits_outstanding -= 1
             d -= HALF_B
-        elif d + range <= HALF_B:
+        elif d + r <= HALF_B:
             out_list.append(0)
             while bits_outstanding > 0:
                 out_list.append(1)
@@ -92,43 +89,44 @@ def normalize_encode(d, bits_outstanding, range, out_list):
         else:
             bits_outstanding += 1
             d -= QUARTER_B
-        d = shift_left_and_fill(d, 0)
-        range = shift_left_and_fill(range, 0)
-    return d, bits_outstanding, range
+        d <<= 1
+        r <<= 1
+    return d, bits_outstanding, r
 
 
-def binary_arithmetic_decoding(encoded_sequence, c0, c1):
+def binary_arithmetic_decoding(encoded_sequence: bitarray, c0, c1):
     d = 0
-    range = 2 ** B
+    r = 2 ** B
     mult_factor = c0 / (c0 + c1)
 
     input_len = len(encoded_sequence)
-    initial_buffer_len = B if input_len > B else input_len
-    input_buffer = int(join_int_list(encoded_sequence[:initial_buffer_len]), 2)
+    input_buffer = int(encoded_sequence[:B].to01(), 2)
+    # input_buffer = int(join_int_list(encoded_sequence[:initial_buffer_len]), 2)
     output = bitarray()
     k = 0
-    bits_already_seen = initial_buffer_len
+    bits_already_seen = B
     while k < c0 + c1:
-        r1 = math.floor(range * mult_factor)
-        r2 = range - r1
+        r1 = math.floor(r * mult_factor)
+        r2 = r - r1
 
         if input_buffer - d >= r2:
-            range = r1
+            r = r1
             d += r2
             output.append(1)
         else:
-            range = r2
+            r = r2
             output.append(0)
 
-        d, input_buffer, range, bits_already_seen = normalize_decode(d, input_buffer, range, encoded_sequence, bits_already_seen)
+        d, input_buffer, r, bits_already_seen = normalize_decode(d, input_buffer, r, encoded_sequence,
+                                                                 bits_already_seen)
         k += 1
 
     return output
 
 
-def normalize_decode(d, input_buffer, range, encoded_sequence, input_string_counter):
-    while range <= QUARTER_B:
-        if d + range <= HALF_B:
+def normalize_decode(d, input_buffer, r, encoded_sequence, input_string_counter):
+    while r <= QUARTER_B:
+        if d + r <= HALF_B:
             pass
         elif d >= HALF_B:
             d -= HALF_B
@@ -136,12 +134,14 @@ def normalize_decode(d, input_buffer, range, encoded_sequence, input_string_coun
         else:
             d -= QUARTER_B
             input_buffer -= QUARTER_B
-        d = shift_left_and_fill(d, 0)
-        range = shift_left_and_fill(range, 0)
-        input_buffer = shift_left_and_fill(input_buffer, str(
-            encoded_sequence[input_string_counter] if input_string_counter < len(encoded_sequence) else '0'))
+        d <<= 1
+        r <<= 1
+
+        next_input_bit = encoded_sequence[input_string_counter] if input_string_counter < len(encoded_sequence) else 0
+        input_buffer <<= 1
+        input_buffer |= next_input_bit
         input_string_counter += 1
-    return d, input_buffer, range, input_string_counter
+    return d, input_buffer, r, input_string_counter
 
 
 def test_binary_arithmetic_encoding_decoding(input_sequence: bitarray):
@@ -174,7 +174,7 @@ def run_test_with_all_possible_binary_numbers_in_range(low: int, hi: int):
 
     print(f'Succeeded: {len(test_cases) - len(failed_cases)}')
     print(f'Failed: {len(failed_cases)}')
-    print(f'Average compression rate: {encoded_length_cumulative_sum / input_length_cumulative_sum}')
+    print(f'Average compression rate: {input_length_cumulative_sum / encoded_length_cumulative_sum}')
 
 
 def run_test_with_file(input_file_path: str, compressed_file_path: str, decoded_file_path: str):
@@ -182,13 +182,19 @@ def run_test_with_file(input_file_path: str, compressed_file_path: str, decoded_
     bits.fromfile(open(input_file_path, 'rb'))
     input_len = len(bits)
     print(f'input length: {input_len}')
+    start_encode = timer()
     encoded, c0, c1 = binary_arithmetic_encoding(bits)
+    end_decode = timer()
     encoded_len = len(encoded)
     print(f'encoded length: {encoded_len}')
     encoded.tofile(open(compressed_file_path, 'wb'))
+    start_decode = timer()
     decoded = binary_arithmetic_decoding(encoded, c0, c1)
+    end_decode = timer()
     decoded.tofile(open(decoded_file_path, 'wb'))
-    print(f'compression rate: {encoded_len / input_len}')
+    print(f'compression rate: {round(input_len / encoded_len, 5)}')
+    print(f'compression time: {round(end_decode - start_encode, 5)}')
+    print(f'decompression time: {round(end_decode - start_decode, 5)}')
 
 
 def test_arbitrary_sequence_with_given_length(length: int):
@@ -200,12 +206,48 @@ def test_arbitrary_sequence_with_given_length(length: int):
     print(f'test passed: {success}, compression rate: {compression_rate}')
 
 
+def test_all_files_from_directory(directory_path, compressed_path, decoded_path):
+    filenames = next(walk(directory_path), (None, None, []))[2]
+    for filename in filenames:
+        print(f'file: {filename}')
+        full_file_path = directory_path + '/' + filename
+        run_test_with_file(full_file_path, compressed_path, decoded_path)
+        print('\n')
+
+
+def read_pgm(pgmf):
+    """Return a raster of integers from a PGM as a list of lists."""
+    first_line = pgmf.readline()
+    assert first_line == b'P5\n'
+    second_line = pgmf.readline()
+    (width, height) = [int(i) for i in second_line.split()]
+    depth = int(pgmf.readline())
+    assert depth <= 255
+
+    raster = []
+    for y in range(height):
+        row = []
+        for y in range(width):
+            row.append(ord(pgmf.read(1)))
+        raster.append(row)
+    return raster
+
+
 if __name__ == '__main__':
-    run_test_with_all_possible_binary_numbers_in_range(8, 13)
+    # run_test_with_all_possible_binary_numbers_in_range(8, 13)
 
-    input_file_path = 'images/pseudokod.jpg'
+    input_file_path = 'data/distributions/uniform.pgm'
     compressed_file_path = 'compressed.txt'
-    decoded_file_path = 'decoded.jpg'
+    decoded_file_path = 'decoded.pgm'
 
+    pgmf = read_pgm(open(input_file_path, 'rb'))
+    array = np.array(pgmf).flatten()
+    print(array.shape)
+    plt.hist(array, bins=range(0, 257))  # arguments are passed to np.histogram
+    plt.title(f'{input_file_path} histogram')
+    plt.show()
+    # test_all_files_from_directory('data/images', compressed_file_path, decoded_file_path)
+    # print(f'file: {input_file_path}')
     # run_test_with_file(input_file_path, compressed_file_path, decoded_file_path)
     # test_arbitrary_sequence_with_given_length(1000000)
+
