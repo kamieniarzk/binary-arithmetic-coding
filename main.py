@@ -13,6 +13,32 @@ B_BIT_MAP = '0' * (INT_SIZE - B) + '1' * B
 HALF_B = 2 ** (B - 1)
 QUARTER_B = 2 ** (B - 2)
 
+# old
+
+
+def calculate_freq_table(input_list):
+    freq_dict = {}
+    for element in input_list:
+        freq_dict[element] = freq_dict[element] + \
+            1 if element in freq_dict else 1
+
+    return freq_dict
+
+
+def calculate_prob_table_from_freq(freq_map):
+    sum_of_all = np.sum(list(freq_map.values()))
+    prob_map = {}
+    for key in freq_map:
+        prob_map[key] = freq_map[key] / sum_of_all
+    return prob_map
+
+
+def calculate_prob_table(input_list):
+    freq_table = calculate_freq_table(input_list)
+    return calculate_prob_table_from_freq(freq_table)
+
+#####
+
 
 def calculate_binary_symbol_frequency(bits: bitarray):
     c0, c1 = 0, 0
@@ -219,7 +245,8 @@ def print_histograms_for_pgms_from_directory(directory_path):
         array = np.array(pgmf).flatten()
         plt.hist(array, bins=range(0, 257))
         plt.title(f'"{filename}" - Histogram')
-        plt.show()
+        plt.savefig(f'results/histograms/{filename}_histogram.png')
+        plt.close()
 
 
 def calculate_entropy(c0, c1):
@@ -231,16 +258,19 @@ def calculate_entropy(c0, c1):
     return -(c0_prob * math.log(c0_prob, 2)) - (c1_prob * math.log(c1_prob, 2))
 
 
-def calculate_entropy_for_files_from_directory(directory_path):
+def calculate_entropy_for_pgms_from_directory(directory_path, results_path='results/entropy.txt'):
     filenames = next(walk(directory_path), (None, None, []))[2]
-    entropy_output = 'results/entropy.txt'
+    entropy_output = results_path
     with open(entropy_output, 'w') as file:
         for filename in filenames:
             full_path = directory_path + '/' + filename
-            bits = bitarray()
-            bits.fromfile(open(full_path, 'rb'))
-            c0, c1 = calculate_binary_symbol_frequency(bits)
-            entropy = calculate_entropy(c0, c1)
+            pgmf = read_pgm(open(full_path, 'rb'))
+            array = np.array(pgmf).flatten()
+            probs = calculate_prob_table(array)
+            entropy = 0
+            for i in range(1, 256):
+                if i in probs:
+                    entropy -= probs[i] * math.log(probs[i], 2)
             file.write(f'Entropy of {filename}: {entropy}\n')
 
 
@@ -286,10 +316,13 @@ if __name__ == '__main__':
     compressed_file_path = 'compressed.txt'
     decoded_file_path = 'decoded.pgm'
 
-    # print_histograms_for_pgms_from_directory('data/distributions')
-    # print_histograms_for_pgms_from_directory('data/images')
+    print_histograms_for_pgms_from_directory('data/distributions')
+    print_histograms_for_pgms_from_directory('data/images')
 
-    calculate_entropy_for_files_from_directory('data/distributions')
+    calculate_entropy_for_pgms_from_directory(
+        'data/distributions', 'results/entropies/distributions_entropy.txt')
+    calculate_entropy_for_pgms_from_directory(
+        'data/images', 'results/entropies/images_entropy.txt')
 
     # test_all_files_from_directory('data/images', compressed_file_path, decoded_file_path)
     # print(f'file: {input_file_path}')
