@@ -222,6 +222,28 @@ def print_histograms_for_pgms_from_directory(directory_path):
         plt.show()
 
 
+def calculate_entropy(c0, c1):
+    sym_sum = c0 + c1
+    c0_prob = c0/sym_sum
+    c1_prob = c1/sym_sum
+    print(c0_prob)
+    print(c1_prob)
+    return -(c0_prob * math.log(c0_prob, 2)) - (c1_prob * math.log(c1_prob, 2))
+
+
+def calculate_entropy_for_files_from_directory(directory_path):
+    filenames = next(walk(directory_path), (None, None, []))[2]
+    entropy_output = 'results/entropy.txt'
+    with open(entropy_output, 'w') as file:
+        for filename in filenames:
+            full_path = directory_path + '/' + filename
+            bits = bitarray()
+            bits.fromfile(open(full_path, 'rb'))
+            c0, c1 = calculate_binary_symbol_frequency(bits)
+            entropy = calculate_entropy(c0, c1)
+            file.write(f'Entropy of {filename}: {entropy}\n')
+
+
 def test_all_files_from_directory(directory_path, compressed_path, decoded_path):
     filenames = next(walk(directory_path), (None, None, []))[2]
     for filename in filenames:
@@ -264,8 +286,11 @@ if __name__ == '__main__':
     compressed_file_path = 'compressed.txt'
     decoded_file_path = 'decoded.pgm'
 
-    print_histograms_for_pgms_from_directory('data/distributions')
-    print_histograms_for_pgms_from_directory('data/images')
+    # print_histograms_for_pgms_from_directory('data/distributions')
+    # print_histograms_for_pgms_from_directory('data/images')
+
+    calculate_entropy_for_files_from_directory('data/distributions')
+
     # test_all_files_from_directory('data/images', compressed_file_path, decoded_file_path)
     # print(f'file: {input_file_path}')
     # run_test_with_file(input_file_path, compressed_file_path, decoded_file_path)
