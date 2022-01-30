@@ -4,11 +4,11 @@ import random
 
 from bitarray import bitarray
 
-int_size = 32
-b = 8  # register length
-b_bit_map = '0' * (int_size - b) + '1' * b
-halfB = 2 ** (b - 1)
-quarterB = 2 ** (b - 2)
+INT_SIZE = 32
+B = 8  # register length - at least 8
+B_BIT_MAP = '0' * (INT_SIZE - B) + '1' * B
+HALF_B = 2 ** (B - 1)
+QUARTER_B = 2 ** (B - 2)
 
 
 def calculate_binary_symbol_frequency(bits: bitarray):
@@ -23,7 +23,7 @@ def calculate_binary_symbol_frequency(bits: bitarray):
 
 def printB(binary_int, variable=''):
     print_num = bin(binary_int)[2:]
-    while len(print_num) < b:
+    while len(print_num) < B:
         print_num = '0' + print_num
     print(variable + ': ' + print_num + ' (' + str(binary_int) + ')')
 
@@ -33,115 +33,115 @@ def join_int_list(int_list):
 
 
 def shift_left_and_fill(number, fill_bit='0'):
-    shifted = (number << 1) & int(b_bit_map, 2)
-    zeros = '0' * (int_size - 1)
+    shifted = (number << 1) & int(B_BIT_MAP, 2)
+    zeros = '0' * (INT_SIZE - 1)
     return shifted | int(f'{zeros}{fill_bit}', 2)
 
 
 def binary_arithmetic_encoding(input_sequence: bitarray):
     c0, c1 = calculate_binary_symbol_frequency(input_sequence)
-    D = 0
-    R = 2 ** b
-    LN = 0
-    out_list = bitarray()
-    mult_factor = c0 / (c0 + c1)
+    d = 0
+    range = 2 ** B
+    bits_outstanding = 0
+    out_array = bitarray()
+    constant_coefficient = c0 / (c0 + c1)
 
-    for element in input_sequence:
-        R1 = math.floor(R * mult_factor)
-        R2 = R - R1
+    for symbol in input_sequence:
+        r1 = math.floor(range * constant_coefficient)
+        r2 = range - r1
 
-        if element:
-            R = R1
-            D = D + R2
-        else:
-            R = R2
+        if symbol:  # 1
+            range = r1
+            d = d + r2
+        else:  # 0
+            range = r2
 
-        D, LN, R = normalize_encode(D, LN, R, out_list)
+        d, bits_outstanding, range = normalize_encode(d, bits_outstanding, range, out_array)
 
-    out_list += flush_bits_from_D(D, LN)
+    out_array += flush_bits_from_D(d, bits_outstanding)
 
-    return [out_list, c0, c1]
+    return [out_array, c0, c1]
 
 
-def flush_bits_from_D(D, LN):
+def flush_bits_from_D(d, bits_outstanding):
     endingR = []
-    for i in range(0, b):
-        last_bit = D & 1
-        D >>= 1
-        if i == b - 1:
-            while LN > 0:
+    for i in range(0, B):
+        last_bit = d & 1
+        d >>= 1
+        if i == B - 1:
+            while bits_outstanding > 0:
                 endingR.insert(0, 1 - last_bit)
-                LN -= 1
+                bits_outstanding -= 1
         endingR.insert(0, last_bit)
     return endingR
 
 
-def normalize_encode(D, LN, R, out_list):
-    while R <= quarterB:
-        if D >= halfB:
+def normalize_encode(d, bits_outstanding, range, out_list):
+    while range <= QUARTER_B:
+        if d >= HALF_B:
             out_list.append(1)
-            while LN > 0:
+            while bits_outstanding > 0:
                 out_list.append(0)
-                LN -= 1
-            D -= halfB
-        elif D + R <= halfB:
+                bits_outstanding -= 1
+            d -= HALF_B
+        elif d + range <= HALF_B:
             out_list.append(0)
-            while LN > 0:
+            while bits_outstanding > 0:
                 out_list.append(1)
-                LN -= 1
+                bits_outstanding -= 1
         else:
-            LN += 1
-            D -= quarterB
-        D = shift_left_and_fill(D, 0)
-        R = shift_left_and_fill(R, 0)
-    return D, LN, R
+            bits_outstanding += 1
+            d -= QUARTER_B
+        d = shift_left_and_fill(d, 0)
+        range = shift_left_and_fill(range, 0)
+    return d, bits_outstanding, range
 
 
 def binary_arithmetic_decoding(encoded_sequence, c0, c1):
-    D = 0
-    R = 2 ** b
+    d = 0
+    range = 2 ** B
     mult_factor = c0 / (c0 + c1)
 
     input_len = len(encoded_sequence)
-    kn_initial_len = b if input_len > b else input_len
-    Kn = int(join_int_list(encoded_sequence[:kn_initial_len]), 2)
+    initial_buffer_len = B if input_len > B else input_len
+    input_buffer = int(join_int_list(encoded_sequence[:initial_buffer_len]), 2)
     output = bitarray()
     k = 0
-    input_string_counter = kn_initial_len
+    bits_already_seen = initial_buffer_len
     while k < c0 + c1:
-        R1 = math.floor(R * mult_factor)
-        R2 = R - R1
+        r1 = math.floor(range * mult_factor)
+        r2 = range - r1
 
-        if Kn - D >= R2:
-            R = R1
-            D += R2
+        if input_buffer - d >= r2:
+            range = r1
+            d += r2
             output.append(1)
         else:
-            R = R2
+            range = r2
             output.append(0)
 
-        D, Kn, R, input_string_counter = normalize_decode(D, Kn, R, encoded_sequence, input_string_counter)
+        d, input_buffer, range, bits_already_seen = normalize_decode(d, input_buffer, range, encoded_sequence, bits_already_seen)
         k += 1
 
     return output
 
 
-def normalize_decode(D, Kn, R, encoded_sequence, input_string_counter):
-    while R <= quarterB:
-        if D + R <= halfB:
+def normalize_decode(d, input_buffer, range, encoded_sequence, input_string_counter):
+    while range <= QUARTER_B:
+        if d + range <= HALF_B:
             pass
-        elif D >= halfB:
-            D -= halfB
-            Kn -= halfB
+        elif d >= HALF_B:
+            d -= HALF_B
+            input_buffer -= HALF_B
         else:
-            D -= quarterB
-            Kn -= quarterB
-        D = shift_left_and_fill(D, 0)
-        R = shift_left_and_fill(R, 0)
-        Kn = shift_left_and_fill(Kn, str(
+            d -= QUARTER_B
+            input_buffer -= QUARTER_B
+        d = shift_left_and_fill(d, 0)
+        range = shift_left_and_fill(range, 0)
+        input_buffer = shift_left_and_fill(input_buffer, str(
             encoded_sequence[input_string_counter] if input_string_counter < len(encoded_sequence) else '0'))
         input_string_counter += 1
-    return D, Kn, R, input_string_counter
+    return d, input_buffer, range, input_string_counter
 
 
 def test_binary_arithmetic_encoding_decoding(input_sequence: bitarray):
