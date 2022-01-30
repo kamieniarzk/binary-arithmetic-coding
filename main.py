@@ -283,12 +283,15 @@ def test_all_files_from_directory(directory_path, compressed_path, decoded_path,
             decoded_path_with_name = decoded_path + '/' + filename
             input_len, encoded_len, encoding_length, decoding_length = run_test_with_file(
                 full_file_path, compressed_path_with_name, decoded_path_with_name)
-            output.write(f'file: {filename}:\t')
-            output.write(f'input size (bits): {input_len}\t')
-            output.write(f'encoded size (bits): {encoded_len}\t')
-            output.write(f'compression rate: {input_len / encoded_len}\t')
-            output.write(f'encoding time (s): {encoding_length}\t')
-            output.write(f'decoding time size (s): {decoding_length}\n\n')
+            output.write(f'file: {filename}:\n')
+            output.write(f'input size (bits): {input_len}\n')
+            output.write(f'encoded size (bits): {encoded_len}\n')
+            output.write(f'compression rate: {input_len / encoded_len}\n')
+            output.write(f'encoding time (s): {encoding_length}\n')
+            output.write(f'decoding time size (s): {decoding_length}\n')
+            output.write(f'bits per byte: (s): {encoded_len / (input_len / 8)}\n\n')
+
+
 
 
 def read_line_ignore_comment(file):
@@ -333,15 +336,13 @@ if __name__ == '__main__':
     images_data_path = 'results/images/logs.txt'
     distributions_data_path = 'results/distributions/logs.txt'
 
-    # print_histograms_for_pgms_from_directory(
-    #     distributions_path, histograms_path)
-    # print_histograms_for_pgms_from_directory(
-    #     distributions_path, histograms_path)
-    #
-    # calculate_entropy_for_pgms_from_directory(
-    #     distributions_path, f'{entropies_path}/{distributions_entropies_filename}')
-    # calculate_entropy_for_pgms_from_directory(
-    #     images_path, f'{entropies_path}/{images_entropies_filename}')
+    print_histograms_for_pgms_from_directory(distributions_path, histograms_path)
+    print_histograms_for_pgms_from_directory(distributions_path, histograms_path)
+
+    calculate_entropy_for_pgms_from_directory(
+distributions_path, f'{entropies_path}/{distributions_entropies_filename}')
+    calculate_entropy_for_pgms_from_directory(
+        images_path, f'{entropies_path}/{images_entropies_filename}')
 
     test_all_files_from_directory(
         images_path, encoded_images_path, decoded_images_path, images_data_path)
