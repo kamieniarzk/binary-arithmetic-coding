@@ -53,7 +53,8 @@ def binary_arithmetic_encoding(input_sequence: bitarray):
         else:  # 0
             r = r2
 
-        d, bits_outstanding, r = normalize_encode(d, bits_outstanding, r, out_array)
+        d, bits_outstanding, r = normalize_encode(
+            d, bits_outstanding, r, out_array)
 
     out_array += flush_bits_from_D(d, bits_outstanding)
 
@@ -137,7 +138,8 @@ def normalize_decode(d, input_buffer, r, encoded_sequence, input_string_counter)
         d <<= 1
         r <<= 1
 
-        next_input_bit = encoded_sequence[input_string_counter] if input_string_counter < len(encoded_sequence) else 0
+        next_input_bit = encoded_sequence[input_string_counter] if input_string_counter < len(
+            encoded_sequence) else 0
         input_buffer <<= 1
         input_buffer |= next_input_bit
         input_string_counter += 1
@@ -164,7 +166,8 @@ def run_test_with_all_possible_binary_numbers_in_range(low: int, hi: int):
     encoded_length_cumulative_sum = 0
 
     for case in test_cases:
-        success, encoded_len, input_len = test_binary_arithmetic_encoding_decoding(bitarray(case))
+        success, encoded_len, input_len = test_binary_arithmetic_encoding_decoding(
+            bitarray(case))
         if success:
             succeeded_cases.append(case)
         else:
@@ -174,7 +177,8 @@ def run_test_with_all_possible_binary_numbers_in_range(low: int, hi: int):
 
     print(f'Succeeded: {len(test_cases) - len(failed_cases)}')
     print(f'Failed: {len(failed_cases)}')
-    print(f'Average compression rate: {input_length_cumulative_sum / encoded_length_cumulative_sum}')
+    print(
+        f'Average compression rate: {input_length_cumulative_sum / encoded_length_cumulative_sum}')
 
 
 def run_test_with_file(input_file_path: str, compressed_file_path: str, decoded_file_path: str):
@@ -201,9 +205,21 @@ def test_arbitrary_sequence_with_given_length(length: int):
     bits = bitarray()
     for i in range(0, length):
         bits.append(random.randint(0, 1))
-    success, encoded_len, input_len = test_binary_arithmetic_encoding_decoding(bits)
+    success, encoded_len, input_len = test_binary_arithmetic_encoding_decoding(
+        bits)
     compression_rate = encoded_len / input_len
     print(f'test passed: {success}, compression rate: {compression_rate}')
+
+
+def print_histograms_for_pgms_from_directory(directory_path):
+    filenames = next(walk(directory_path), (None, None, []))[2]
+    for filename in filenames:
+        full_path = directory_path + '/' + filename
+        pgmf = read_pgm(open(full_path, 'rb'))
+        array = np.array(pgmf).flatten()
+        plt.hist(array, bins=range(0, 257))
+        plt.title(f'"{filename}" - Histogram')
+        plt.show()
 
 
 def test_all_files_from_directory(directory_path, compressed_path, decoded_path):
@@ -215,13 +231,21 @@ def test_all_files_from_directory(directory_path, compressed_path, decoded_path)
         print('\n')
 
 
+def read_line_ignore_comment(file):
+    line = file.readline()
+    while line[0] == ord('#'):
+        line = file.readline()
+    return line
+
+
 def read_pgm(pgmf):
     """Return a raster of integers from a PGM as a list of lists."""
-    first_line = pgmf.readline()
+    first_line = read_line_ignore_comment(pgmf)
     assert first_line == b'P5\n'
-    second_line = pgmf.readline()
+    second_line = read_line_ignore_comment(pgmf)
+
     (width, height) = [int(i) for i in second_line.split()]
-    depth = int(pgmf.readline())
+    depth = int(read_line_ignore_comment(pgmf))
     assert depth <= 255
 
     raster = []
@@ -240,14 +264,9 @@ if __name__ == '__main__':
     compressed_file_path = 'compressed.txt'
     decoded_file_path = 'decoded.pgm'
 
-    pgmf = read_pgm(open(input_file_path, 'rb'))
-    array = np.array(pgmf).flatten()
-    print(array.shape)
-    plt.hist(array, bins=range(0, 257))  # arguments are passed to np.histogram
-    plt.title(f'{input_file_path} histogram')
-    plt.show()
+    print_histograms_for_pgms_from_directory('data/distributions')
+    print_histograms_for_pgms_from_directory('data/images')
     # test_all_files_from_directory('data/images', compressed_file_path, decoded_file_path)
     # print(f'file: {input_file_path}')
     # run_test_with_file(input_file_path, compressed_file_path, decoded_file_path)
     # test_arbitrary_sequence_with_given_length(1000000)
-
