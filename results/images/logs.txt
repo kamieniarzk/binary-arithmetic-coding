@@ -1,36 +1,12 @@
-Results for barbara.pgm:
-Input size (bits): 2097456
-Encoded size (bits): 2097077
-Encoding time (s): 1.5166234000000003
-Decoding time size (s): 2.0990064000000004
+file: peppers.pgm:	input size (bits): 2097456	encoded size (bits): 2095439	encoding time (s): 0.9981579580000001	decoding time size (s): 1.218635708
 
-Results for boat.pgm:
-Input size (bits): 2097456
-Encoded size (bits): 2095161
-Encoding time (s): 1.5211080999999993
-Decoding time size (s): 2.092687099999999
+file: lena.pgm:	input size (bits): 2097456	encoded size (bits): 2097273	encoding time (s): 0.8676449579999996	decoding time size (s): 1.1905087919999997
 
-Results for chronometer.pgm:
-Input size (bits): 2097456
-Encoded size (bits): 2002507
-Encoding time (s): 1.5089823000000013
-Decoding time size (s): 2.0859020999999984
+file: boat.pgm:	input size (bits): 2097456	encoded size (bits): 2095161	encoding time (s): 0.8756787500000005	decoding time size (s): 1.2505904579999996
 
-Results for lena.pgm:
-Input size (bits): 2097456
-Encoded size (bits): 2097273
-Encoding time (s): 1.5262805999999998
-Decoding time size (s): 2.0751489999999997
+file: barbara.pgm:	input size (bits): 2097456	encoded size (bits): 2097077	encoding time (s): 0.9487038329999997	decoding time size (s): 1.2626637910000005
 
-Results for mandril.pgm:
-Input size (bits): 2097456
-Encoded size (bits): 2097463
-Encoding time (s): 1.4477718000000017
-Decoding time size (s): 2.114505300000001
+file: chronometer.pgm:	input size (bits): 2097456	encoded size (bits): 2002507	encoding time (s): 0.8837586250000005	decoding time size (s): 1.149408792000001
 
-Results for peppers.pgm:
-Input size (bits): 2097456
-Encoded size (bits): 2095439
-Encoding time (s): 1.5538926999999987
-Decoding time size (s): 2.1163334999999996
+file: mandril.pgm:	input size (bits): 2097456	encoded size (bits): 2097463	encoding time (s): 0.8395557090000008	decoding time size (s): 1.2994793330000007
 

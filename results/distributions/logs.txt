@@ -1,60 +1,14 @@
-Results for geometr_05.pgm:
-Input size (bits): 2097272
-Encoded size (bits): 1273433
-Encoding time (s): 1.295569799999999
-Decoding time size (s): 1.774233800000001
+file: normal_10.pgm:	input size (bits): 2097272	encoded size (bits): 2097561	encoding time (s): 0.9226812089999985	decoding time size (s): 1.3427360000000004
 
-Results for geometr_09.pgm:
-Input size (bits): 2097272
-Encoded size (bits): 1705435
-Encoding time (s): 1.3863292999999999
-Decoding time size (s): 1.9146848999999975
+file: laplace_30.pgm:	input size (bits): 2097272	encoded size (bits): 2097832	encoding time (s): 0.9997146250000011	decoding time size (s): 1.1893864580000013
 
-Results for geometr_099.pgm:
-Input size (bits): 2097272
-Encoded size (bits): 2067547
-Encoding time (s): 1.504466200000003
-Decoding time size (s): 2.0840034000000003
+file: laplace_20.pgm:	input size (bits): 2097272	encoded size (bits): 2097703	encoding time (s): 0.8736786670000001	decoding time size (s): 1.1887271659999996
 
-Results for laplace_10.pgm:
-Input size (bits): 2097272
-Encoded size (bits): 2097134
-Encoding time (s): 1.5348354999999998
-Decoding time size (s): 2.090480999999997
+file: uniform.pgm:	input size (bits): 2097272	encoded size (bits): 2097919	encoding time (s): 0.934445084	decoding time size (s): 1.213499291999998
 
-Results for laplace_20.pgm:
-Input size (bits): 2097272
-Encoded size (bits): 2097703
-Encoding time (s): 1.523335699999997
-Decoding time size (s): 2.0908066000000005
+file: laplace_10.pgm:	input size (bits): 2097272	encoded size (bits): 2097134	encoding time (s): 0.8900037500000018	decoding time size (s): 1.175602125000001
 
-Results for laplace_30.pgm:
-Input size (bits): 2097272
-Encoded size (bits): 2097832
-Encoding time (s): 1.5231799000000024
-Decoding time size (s): 2.0822292000000004
+file: normal_50.pgm:	input size (bits): 2097272	encoded size (bits): 2097279	encoding time (s): 0.9410960410000015	decoding time size (s): 1.1548344169999964
 
-Results for normal_10.pgm:
-Input size (bits): 2097272
-Encoded size (bits): 2097561
-Encoding time (s): 1.5171279999999996
-Decoding time size (s): 2.1078158999999985
-
-Results for normal_30.pgm:
-Input size (bits): 2097272
-Encoded size (bits): 2097891
-Encoding time (s): 1.5132256999999996
-Decoding time size (s): 2.110673200000001
-
-Results for normal_50.pgm:
-Input size (bits): 2097272
-Encoded size (bits): 2097279
-Encoding time (s): 1.438833300000006
-Decoding time size (s): 2.0797014999999988
-
-Results for uniform.pgm:
-Input size (bits): 2097272
-Encoded size (bits): 2097919
-Encoding time (s): 1.5117945000000006
-Decoding time size (s): 2.106090299999998
+file: normal_30.pgm:	input size (bits): 2097272	encoded size (bits): 2097891	encoding time (s): 0.8825627500000017	decoding time size (s): 1.2139149590000002
 
