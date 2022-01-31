@@ -1,48 +1,48 @@
-file: peppers.pgm:
+file: barbara.pgm:
 input size (bits): 2097456
-encoded size (bits): 2095664
-compression rate: 1.0008550989089855
-encoding time (s): 0.9321908329999999
-decoding time size (s): 1.2734402499999993
-bits per byte: (s): 7.9931650532835965
-
-file: lena.pgm:
-input size (bits): 2097456
-encoded size (bits): 2097142
-compression rate: 1.0001497275816325
-encoding time (s): 0.9288824579999995
-decoding time size (s): 1.273639082999999
-bits per byte: (s): 7.998802358666881
+encoded size (bits): 2096891
+compression rate: 1.0002694465282171
+encoding time (s): 1.7282134000000013
+decoding time size (s): 2.3993576999999995
+bits per byte: (s): 7.997845008429259
 
 file: boat.pgm:
 input size (bits): 2097456
 encoded size (bits): 2095086
 compression rate: 1.0011312184798142
-encoding time (s): 0.9272821660000012
-decoding time size (s): 1.2806636250000007
+encoding time (s): 1.7626673999999998
+decoding time size (s): 2.400066800000001
 bits per byte: (s): 7.9909604778360075
-
-file: barbara.pgm:
-input size (bits): 2097456
-encoded size (bits): 2096891
-compression rate: 1.0002694465282171
-encoding time (s): 0.9291193329999992
-decoding time size (s): 1.2667516670000012
-bits per byte: (s): 7.997845008429259
 
 file: chronometer.pgm:
 input size (bits): 2097456
 encoded size (bits): 2001960
 compression rate: 1.047701252772283
-encoding time (s): 0.9353267920000015
-decoding time size (s): 1.2805888750000012
+encoding time (s): 1.771948799999997
+decoding time size (s): 2.411983199999998
 bits per byte: (s): 7.635764468956679
+
+file: lena.pgm:
+input size (bits): 2097456
+encoded size (bits): 2097142
+compression rate: 1.0001497275816325
+encoding time (s): 1.7538693000000016
+decoding time size (s): 2.4174024000000003
+bits per byte: (s): 7.998802358666881
 
 file: mandril.pgm:
 input size (bits): 2097456
 encoded size (bits): 2097317
 compression rate: 1.0000662751505853
-encoding time (s): 0.9280551249999967
-decoding time size (s): 1.2799851249999996
+encoding time (s): 1.7636903000000004
+decoding time size (s): 2.4193673999999987
 bits per byte: (s): 7.999469833932154
+
+file: peppers.pgm:
+input size (bits): 2097456
+encoded size (bits): 2095664
+compression rate: 1.0008550989089855
+encoding time (s): 1.7788381999999991
+decoding time size (s): 2.424042100000001
+bits per byte: (s): 7.9931650532835965
 

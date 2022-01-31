@@ -289,9 +289,8 @@ def test_all_files_from_directory(directory_path, compressed_path, decoded_path,
             output.write(f'compression rate: {input_len / encoded_len}\n')
             output.write(f'encoding time (s): {encoding_length}\n')
             output.write(f'decoding time size (s): {decoding_length}\n')
-            output.write(f'bits per byte: (s): {encoded_len / (input_len / 8)}\n\n')
-
-
+            output.write(
+                f'bits per byte: (s): {encoded_len / (input_len / 8)}\n\n')
 
 
 def read_line_ignore_comment(file):
@@ -321,26 +320,34 @@ def read_pgm(pgmf):
 
 
 if __name__ == '__main__':
-    # run_test_with_all_possible_binary_numbers_in_range(8, 13)
-
     distributions_path = 'data/distributions'
     images_path = 'data/images'
+    bmp_images_path = 'data/bmp-images'
+
     entropies_path = 'results/entropies'
     histograms_path = 'results/histograms'
     distributions_entropies_filename = 'distributions_entropies.txt'
     images_entropies_filename = 'images_entropies.txt'
+
     encoded_images_path = 'results/images/encoded'
     decoded_images_path = 'results/images/decoded'
+    images_data_path = 'results/images/logs.txt'
+
     encoded_distributions_path = 'results/distributions/encoded'
     decoded_distributions_path = 'results/distributions/decoded'
-    images_data_path = 'results/images/logs.txt'
     distributions_data_path = 'results/distributions/logs.txt'
 
-    print_histograms_for_pgms_from_directory(distributions_path, histograms_path)
-    print_histograms_for_pgms_from_directory(distributions_path, histograms_path)
+    encoded_bmp_images_path = 'results/bmp-images/encoded'
+    decoded_bmp_images_path = 'results/bmp-images/decoded'
+    bmp_images_data_path = 'results/bmp-images/logs.txt'
+
+    print_histograms_for_pgms_from_directory(
+        distributions_path, histograms_path)
+    print_histograms_for_pgms_from_directory(
+        distributions_path, histograms_path)
 
     calculate_entropy_for_pgms_from_directory(
-distributions_path, f'{entropies_path}/{distributions_entropies_filename}')
+        distributions_path, f'{entropies_path}/{distributions_entropies_filename}')
     calculate_entropy_for_pgms_from_directory(
         images_path, f'{entropies_path}/{images_entropies_filename}')
 
@@ -348,3 +355,5 @@ distributions_path, f'{entropies_path}/{distributions_entropies_filename}')
         images_path, encoded_images_path, decoded_images_path, images_data_path)
     test_all_files_from_directory(
         distributions_path, encoded_distributions_path, decoded_distributions_path, distributions_data_path)
+    test_all_files_from_directory(
+        bmp_images_path, encoded_bmp_images_path, decoded_bmp_images_path, bmp_images_data_path)

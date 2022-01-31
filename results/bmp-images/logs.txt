@@ -1,0 +1,24 @@
+file: bus.bmp:
+input size (bits): 39974256
+encoded size (bits): 38619634
+compression rate: 1.0350759926932502
+encoding time (s): 33.56005859999999
+decoding time size (s): 45.245293799999985
+bits per byte: (s): 7.728901120761322
+
+file: motorboat.bmp:
+input size (bits): 54000432
+encoded size (bits): 52488075
+compression rate: 1.0288133447454493
+encoding time (s): 44.56497200000001
+decoding time size (s): 60.366343400000005
+bits per byte: (s): 7.7759489035198825
+
+file: night.bmp:
+input size (bits): 113356464
+encoded size (bits): 105568339
+compression rate: 1.0737733024292444
+encoding time (s): 91.65830010000002
+decoding time size (s): 126.70771239999999
+bits per byte: (s): 7.450362177846338
+
